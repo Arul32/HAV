@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Search</title>
+   <link rel="stylesheet" href="test1.css">
+</head>
+<body>
+    <h1 class="heading">BUS TRACKING</h1>
+    <div class="search-container">
+        <div style="position: relative;">
+            <input type="text" id="from" placeholder="From" oninput="fetchSuggestions('from')" autocomplete="off">
+            <div class="suggestions" id="from-suggestions"></div>
+        </div>
+        
+        <div style="position: relative;">
+            <input type="text" id="to" placeholder="To" oninput="fetchSuggestions('to')" autocomplete="off">
+            <div class="suggestions" id="to-suggestions"></div>
+        </div>
+
+        <input type="text" id="bus" placeholder="Bus No (Optional)">
+        
+        <select id="timeOption" onchange="toggleTimeInput()">
+            <option value="current">Current Time</option>
+            <option value="set">Set Time</option>
+            <option value="notset" selected>Not Set</option> <!-- Default option -->
+        </select>
+        <input type="time" id="setTime" disabled>
+        <button onclick="searchBus()">Search</button>
+    </div>
+    <div id="results" class="results"></div>
+
+
+
+
+
+    <div class="stop">
+        <div class="outer">
+            <p class="para">BUS NO:33A</p>
+            <div class="inner">
+                    <div class="main">
+                            <div class="de">
+                            <p class="head">CURRENT STOP</p>
+                            <p class="p">ARASMPALAYAM STOP1  </p>
+                            </div>
+    
+                            <div class="se">
+                                <p class="head">NEXT STOP</p>
+                                <p class="p">ARASMPALAYAM STOP2 </p>
+                                </div>
+                        
+                    </div>     
+    
+                    <div class="smain">
+                        <div class="de">
+                            <p class="head">TIME</p>
+                            <p class="p"> 9.45 AM </p>
+                            </div>
+    
+                            <div class="se">
+                                <p class="head">AVAILABLE SEAT </p>
+                                <p class="p">65 </p>
+                                </div>
+                    </div>
+            </div>
+    
+        </div>
+    </div>
+  
+   
+
+    <script>
+        function toggleTimeInput() {
+            const timeOption = document.getElementById("timeOption").value;
+            const setTimeInput = document.getElementById("setTime");
+
+            if (timeOption === "current" || timeOption === "notset") {
+                setTimeInput.disabled = true;
+                setTimeInput.value = "";
+            } else {
+
+                setTimeInput.disabled = false;
+            }
+        }
+
+        function fetchSuggestions(inputId) {
+            const query = document.getElementById(inputId).value.trim();
+            if (!query) {
+                document.getElementById(`${inputId}-suggestions`).style.display = "none";
+                return;
+            }
+
+            fetch(`http://localhost:8080/api/stops?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const suggestionsBox = document.getElementById(`${inputId}-suggestions`);
+                    suggestionsBox.innerHTML = "";
+                    if (data.length === 0) {
+                        suggestionsBox.style.display = "none";
+                        return;
+                    }
+
+                    data.forEach(stop => {
+                        const div = document.createElement("div");
+                        div.textContent = stop.stopName;
+                        div.onclick = () => {
+                            document.getElementById(inputId).value = stop.stopName;
+                            suggestionsBox.style.display = "none";
+                        };
+                        suggestionsBox.appendChild(div);
+                    });
+
+                    suggestionsBox.style.display = "block";
+                })
+                .catch(error => console.error("Error fetching suggestions:", error));
+        }
+
+
+        function searchBus() {
+    const from = document.getElementById("from").value.trim();
+    const to = document.getElementById("to").value.trim();
+    const bus = document.getElementById("bus").value.trim();
+    const timeOption = document.getElementById("timeOption").value;
+    const setTime = document.getElementById("setTime").value;
+
+    if (!from || !to) {
+        alert("Please enter both 'From' and 'To' locations.");
+        return;
+    }
+
+    // Determine the filter time based on the selected option
+    let filterTime = null;
+    if (timeOption === "set" && setTime) {
+        // Use user-set time
+        const [hours, minutes] = setTime.split(":").map(Number);
+        filterTime = new Date();
+        filterTime.setHours(hours, minutes, 0, 0); // Set the user-defined hours & minutes
+    } else if (timeOption === "current") {
+        // Use current time
+        filterTime = new Date();
+    }
+
+    fetch(`http://localhost:8080/api/buses?from=${from}&to=${to}&busNo=${bus}`)
+        .then(response => response.json())
+        .then(data => {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = "<p>No buses found.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            // Filter buses based on time option
+            const filteredBuses = data.filter(bus => {
+                if (timeOption === "notset") {
+                    return true; // Show all buses
+                } else {
+                    return bus.tripTimes.some(trip => {
+                        const tripTime = parseTimeString(trip.fromTime);
+                        return tripTime >= filterTime;
+                    });
+                }
+            });
+
+            if (filteredBuses.length === 0) {
+                resultsDiv.innerHTML = "<p>No buses found for the selected time.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            // Sort buses based on the closest arrival time to the filterTime
+            filteredBuses.sort((a, b) => {
+                const closestTimeA = findClosestTime(a.tripTimes, filterTime);
+                const closestTimeB = findClosestTime(b.tripTimes, filterTime);
+
+                return closestTimeA - closestTimeB; // Sort in ascending order
+            });
+
+            // Display sorted buses
+            filteredBuses.forEach(bus => {
+                const busItem = document.createElement("div");
+                busItem.classList.add("bus-item");
+
+                // Bus information
+                const busInfo = `
+                    <div class="bus-info">
+                        <div><strong>Bus No:</strong> ${bus.busNo}</div>
+                        <div><strong>Route:</strong> ${bus.from} to ${bus.to}</div>
+                    </div>
+                `;
+
+                // Filter trip times based on the filter time
+                const filteredTripTimes = bus.tripTimes.filter(trip => {
+                    const tripTime = parseTimeString(trip.fromTime);
+                    return tripTime >= filterTime;
+                });
+
+                // Timings (filtered based on the filter time)
+                const timingsHTML = `
+                    <div class="timings">
+                        <select ${filteredTripTimes.length === 1 ? 'disabled' : ''}>
+                            ${filteredTripTimes
+                                .map(time => `
+                                    <option value="${time.fromTime} - ${time.toTime}">
+                                        ${time.fromTime} - ${time.toTime}
+                                    </option>
+                                `).join("")}
+                        </select>
+                    </div>
+                `;
+
+                // Combine bus info and timings
+                busItem.innerHTML = busInfo + timingsHTML;
+                resultsDiv.appendChild(busItem);
+
+                // Add click event listener to the bus item
+                busItem.addEventListener("click", () => {
+                    // Get the selected time from the dropdown
+                    const selectedTime = busItem.querySelector("select").value.split(" - ")[0];
+
+                    // Fetch the full route data for the selected bus
+                    fetch(`http://localhost:8080/api/bus-route?busNo=${bus.busNo}&isReverseDirection=${bus.isReverseDirection}`)
+                        .then(response => response.json())
+                        .then(routeData => {
+                            // Pass the selected time, direction, and "From" stop name to createOuterDivs
+                            createOuterDivs(routeData, selectedTime, bus.isReverseDirection, from);
+                        })
+                        .catch(error => console.error("Error fetching route data:", error));
+                });
+            });
+
+            resultsDiv.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            resultsDiv.innerHTML = "<p>Error fetching data. Please try again.</p>";
+            resultsDiv.style.display = "block";
+        });
+}
+
+// Function to create multiple outer divs based on route data
+function createOuterDivs(routeData, selectedTime, isReverseDirection, fromStopName) {
+    // Clear any existing outer divs
+    const stopContainer = document.querySelector(".stop");
+    stopContainer.innerHTML = "";
+    var num = 0;
+
+    // Parse the selected time into a Date object
+    const arrivalTimeAtFromStop = parseTimeString(selectedTime);
+
+    // Find the "From" stop in the route data
+    const fromStop = routeData.route.find(stop => stop.stopName === fromStopName);
+
+    if (!fromStop) {
+        alert(`From stop "${fromStopName}" not found in the route data.`);
+        return;
+    }
+
+    // Calculate the trip time by subtracting the forward/reverse time of the "From" stop
+    const tripTime = new Date(arrivalTimeAtFromStop);
+    tripTime.setMinutes(tripTime.getMinutes() - fromStop[isReverseDirection ? "reverse" : "forword"]);
+
+    // Create and append outer divs for each stop
+    routeData.route.forEach((stop, index) => {
+        const outerDiv = document.createElement("div");
+        outerDiv.classList.add("top");
+
+        // Calculate the arrival time for this stop
+        const arrivalTime = new Date(tripTime);
+        arrivalTime.setMinutes(arrivalTime.getMinutes() + stop[isReverseDirection ? "reverse" : "forword"]);
+
+        // Format the arrival time as HH:MM AM/PM
+        const formattedTime = formatTime(arrivalTime);
+
+        // Determine the next stop
+        const nextStop = index < routeData.route.length - 1 ? routeData.route[index + 1].stopName : "N/A";
+
+        // Add content to the outer div
+        outerDiv.innerHTML = `
+            <div class="top">
+                <p class="no">STOP ${++num}</p>
+                <div class="outer">
+                    <p class="para">BUS NO: ${routeData.busNo}</p>
+                    <div class="inner">
+                        <div class="main">
+                            <div class="de">
+                                <p class="head">CURRENT STOP</p>
+                                <p class="p">${stop.stopName}</p>
+                            </div>
+                            <div class="se">
+                                <p class="head">NEXT STOP</p>
+                                <p class="p">${nextStop}</p>
+                            </div>
+                        </div>
+                        <div class="smain">
+                            <div class="de">
+                                <p class="head">TIME</p>
+                                <p class="p">${formattedTime}</p> <!-- Display the calculated time here -->
+                            </div>
+                            <div class="se">
+                                <p class="head">AVAILABLE SEAT</p>
+                                <p class="p">${stop.availableSeats || "N/A"}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="veryout">
+                        <div class="out">
+                            <div class="circle"></div>
+                            <div class="box">
+                                <div class="b"></div>
+                                <div class="b"></div>
+                                <div class="b"></div>
+                            </div>
+                            <div class="circle"></div>
+                        </div>
+                        <div class="plate">TN 41 P2702</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Append the outer div to the stop container
+        stopContainer.appendChild(outerDiv);
+    });
+}
+// Helper function to parse time strings (12-hour or 24-hour format)
+function parseTimeString(timeStr) {
+    const trimmedTime = timeStr.trim();
+    const is12HourFormat = trimmedTime.toLowerCase().includes("am") || trimmedTime.toLowerCase().includes("pm");
+
+    if (is12HourFormat) {
+        // Convert 12-hour format to 24-hour
+        const [time, period] = trimmedTime.split(" ");
+        let [hours, minutes] = time.split(":").map(Number);
+
+        if (period.toLowerCase() === "pm" && hours !== 12) {
+            hours += 12; // Convert PM to 24-hour format
+        } else if (period.toLowerCase() === "am" && hours === 12) {
+            hours = 0; // Convert 12 AM to 0 hours
+        }
+
+        const tripTime = new Date();
+        tripTime.setHours(hours, minutes, 0, 0);
+        return tripTime;
+    } else {
+        // Assume it's 24-hour format
+        const [hours, minutes] = trimmedTime.split(":").map(Number);
+        const tripTime = new Date();
+        tripTime.setHours(hours, minutes, 0, 0);
+        return tripTime;
+    }
+}
+
+// Helper function to find the closest trip time to the filterTime
+function findClosestTime(tripTimes, filterTime) {
+    let closestTime = null;
+
+    tripTimes.forEach(trip => {
+        const tripTime = parseTimeString(trip.fromTime);
+
+        if (tripTime >= filterTime) {
+            if (!closestTime || Math.abs(tripTime - filterTime) < Math.abs(closestTime - filterTime)) {
+                closestTime = tripTime;
+            }
+        }
+    });
+
+    return closestTime || new Date(8640000000000000); // Return a very large date if no valid time is found
+}
+function formatTime(date) {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const period = hours >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;
+
+    return `${hours}:${minutes} ${period}`;
+}window.onload = function () {
+    toggleTimeInput();
+};
+    </script>
+</body>
+</html>
+

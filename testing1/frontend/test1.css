@@ -1,0 +1,245 @@
+body {
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin:auto;
+    text-align: center;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.heading
+{
+       margin-top: 5%;
+}
+/* Style the timings dropdown */
+.timings select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc; /* Match border color */
+    border-radius: 4px;
+    width: 150px; /* Fixed width for dropdown */
+    appearance: none; /* Remove default arrow */
+    background-color: white; /* Match background */
+    color: #333; /* Match text color */
+    cursor: pointer; /* Show pointer cursor */
+}
+
+/* Style the dropdown when disabled (only one timing) */
+.timings select:disabled {
+    background-color: white; /* Keep background white */
+    color: #333; /* Keep text color consistent */
+    cursor: default; /* Show default cursor */
+    border: 1px solid #ccc; /* Match border color */
+    opacity: 1; /* Ensure no transparency */
+}
+.search-container {
+
+    background: white;
+    margin-top: 5%;
+    margin-left: 100px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 80%;
+    justify-content: space-between;
+    box-shadow: #ccc;
+
+}
+input, select, button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    width: 200px;
+    display: none;
+}
+.suggestions div {
+    padding: 8px;
+    cursor: pointer;
+}
+.suggestions div:hover {
+    background: #f0f0f0;
+}
+.results {
+    margin-top: 20px;
+    width: 80%;
+    display: none;
+   
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 100px;
+}
+.bus-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.bus-item:last-child {
+    border-bottom: none;
+}
+.bus-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.bus-info strong {
+    margin-right: 5px;
+}
+.timings {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.stop {
+    display: flex;
+    border: 2px solid black;
+    border-radius: 25px;
+    width: 80%;
+
+    margin-left: 100px;
+    margin-top: 20px;
+    padding: 10px;
+    overflow-x: auto; 
+    flex-wrap: nowrap;
+    gap: 20px; 
+}       
+.top{
+ 
+    display: block;
+    place-items: center;
+}
+.no{
+  
+    font-weight: bold;
+}
+.outer{
+    width: 270px;
+    border: 2px solid black;
+    display: block;
+    justify-content: center;
+    margin: 0px;
+    border-radius: 50px;
+    background-color: #f9f9f9;
+    
+}
+.para {
+    margin: 0;
+    font-size: 17px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px 0;
+}
+
+.inner{
+   border: 2px solid black;
+   border-radius: 20px;
+   width: 269px;
+   
+}
+.main{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    width: 270px;
+   
+}
+
+.de{
+    width: 130px;
+    border-radius: 20px;
+    padding: 5px;
+}
+.p
+{
+    text-align: center;
+    margin: 0px;
+    font-size: 14px;
+}
+.head{
+    text-align: center;
+    margin: 0px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.se{
+    width: 130px;
+    border-radius: 20px;
+    padding: 5px;
+}
+.smain{
+    display: flex;
+    justify-content: space-between;
+    width: 270px;
+    margin-bottom: 20px;
+}
+.out{
+    display:flex;
+    width: 265px;
+    justify-content: center;
+    border-radius: 20px;
+}
+.circle{
+    width: 27px;
+    height: 27px;
+    border:2px solid black;
+    background-color: black;
+    border-radius: 20px;
+    margin-top: 14px;
+    margin-left: 5px;
+}
+.box{
+    width: 160px;
+    margin-top: 14px;
+    margin-left: 10px;
+    margin-right: 10px;
+ height: 30px;
+    
+}
+.b{
+    width: 165px;
+    height: 6px;
+    background-color: black;
+    margin: 2px;
+}
+.veryout{
+
+    width: 267px;
+   display: block;
+   place-items: center;
+  
+    
+}
+.plate{
+    border: 2px solid black;
+    width: 100px;
+    margin: 5px;
+    margin-top: 0px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 20px;
+    
+}
