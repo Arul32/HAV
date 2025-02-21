@@ -29,7 +29,7 @@
             <option value="notset" selected>Not Set</option> <!-- Default option -->
         </select>
         <input type="time" id="setTime" disabled>
-        <button onclick="searchBus()">Search</button>
+        <button onclick="helperfunction()">Search</button>
     </div>
     <div id="results" class="results"></div>
 
@@ -119,20 +119,14 @@
         }
 
 
-        function searchBus() {
-    const from = document.getElementById("from").value.trim();
+     function  helperfunction(){
+        const from = document.getElementById("from").value.trim();
     const to = document.getElementById("to").value.trim();
     const bus = document.getElementById("bus").value.trim();
     const timeOption = document.getElementById("timeOption").value;
     const setTime = document.getElementById("setTime").value;
-
-    if (!from || !to) {
-        alert("Please enter both 'From' and 'To' locations.");
-        return;
-    }
-
-    // Determine the filter time based on the selected option
-    let filterTime = null;
+        if(from && to){
+            let filterTime = null;
     if (timeOption === "set" && setTime) {
         // Use user-set time
         const [hours, minutes] = setTime.split(":").map(Number);
@@ -241,8 +235,126 @@
             resultsDiv.innerHTML = "<p>Error fetching data. Please try again.</p>";
             resultsDiv.style.display = "block";
         });
-}
+        }
 
+        else if(to && !from){
+            let filterTime = null;
+    if (timeOption === "set" && setTime) {
+        // Use user-set time
+        const [hours, minutes] = setTime.split(":").map(Number);
+        filterTime = new Date();
+        filterTime.setHours(hours, minutes, 0, 0); // Set the user-defined hours & minutes
+    } else if (timeOption === "current") {
+        // Use current time
+        filterTime = new Date();
+    }
+
+    fetch(`http://localhost:8080/api/to-location-buses?to=${to}&busNo=${bus}`)
+        .then(response => response.json())
+        .then(data => {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = "<p>No buses found.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            // Filter buses based on time option
+            const filteredBuses = data.filter(bus => {
+                if (timeOption === "notset") {
+                    return true; // Show all buses
+                } else {
+                    return bus.tripTimes.some(trip => {
+                        const tripTime = parseTimeString(trip.fromTime);
+                        return tripTime >= filterTime;
+                    });
+                }
+            });
+
+            if (filteredBuses.length === 0) {
+                resultsDiv.innerHTML = "<p>No buses found for the selected time.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            // Sort buses based on the closest arrival time to the filterTime
+            filteredBuses.sort((a, b) => {
+                const closestTimeA = findClosestTime(a.tripTimes, filterTime);
+                const closestTimeB = findClosestTime(b.tripTimes, filterTime);
+
+                return closestTimeA - closestTimeB; // Sort in ascending order
+            });
+
+            // Display sorted buses
+            filteredBuses.forEach(bus => {
+                const busItem = document.createElement("div");
+                busItem.classList.add("bus-item");
+
+                // Bus information
+                const busInfo = `
+                    <div class="bus-info">
+                        <div><strong>Bus No:</strong> ${bus.busNo}</div>
+                        <div><strong>Route:</strong> ${bus.from} to ${bus.to}</div>
+                    </div>
+                `;
+
+                // Filter trip times based on the filter time
+                const filteredTripTimes = bus.tripTimes.filter(trip => {
+                    const tripTime = parseTimeString(trip.fromTime);
+                    return tripTime >= filterTime;
+                });
+
+                // Timings (filtered based on the filter time)
+                const timingsHTML = `
+                    <div class="timings">
+                        <select ${filteredTripTimes.length === 1 ? 'disabled' : ''}>
+                            ${filteredTripTimes
+                                .map(time => `
+                                    <option value="${time.fromTime} - ${time.toTime}">
+                                        ${time.fromTime} - ${time.toTime}
+                                    </option>
+                                `).join("")}
+                        </select>
+                    </div>
+                `;
+
+                // Combine bus info and timings
+                busItem.innerHTML = busInfo + timingsHTML;
+                resultsDiv.appendChild(busItem);
+
+                // Add click event listener to the bus item
+                busItem.addEventListener("click", () => {
+                    // Get the selected time from the dropdown
+                    const selectedTime = busItem.querySelector("select").value.split(" - ")[0];
+
+                    // Fetch the full route data for the selected bus
+                    fetch(`http://localhost:8080/api/bus-route?busNo=${bus.busNo}`)
+                        .then(response => response.json())
+                        .then(routeData => {
+                            // Pass the selected time and "From" stop name to createOuterDivs
+                            createOuterDivs(routeData, selectedTime, false, bus.from);
+                        })
+                        .catch(error => console.error("Error fetching route data:", error));
+                });
+            });
+
+            resultsDiv.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            resultsDiv.innerHTML = "<p>Error fetching data. Please try again.</p>";
+            resultsDiv.style.display = "block";
+        });
+        }
+        else {
+            console.log("enter the from and to or to location ")
+            return;
+        }
+       }
+
+   
 // Function to create multiple outer divs based on route data
 function createOuterDivs(routeData, selectedTime, isReverseDirection, fromStopName) {
     // Clear any existing outer divs
@@ -386,4 +498,3 @@ function formatTime(date) {
     </script>
 </body>
 </html>
-

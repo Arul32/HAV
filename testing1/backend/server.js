@@ -8,60 +8,151 @@ app.use(cors());
 
 // Updated bus stops data
 const stops = [
-    { stopName: "Arasampalayam Stop 1" },
-    { stopName: "Arasampalayam Stop 2" },
-    { stopName: "Arasampalayam Stop 3" },
-    { stopName: "Solpalayam Stop 1" },
-    { stopName: "Solpalayam Stop 2" },
-    { stopName: "Solpalayam Stop 3" },
-    { stopName: "Palayam Stop 1" },
-    { stopName: "Palayam Stop 2" },
-    { stopName: "Palayam Stop 3" },
-    { stopName: "Kinathukadavu Stop 1" },
-    { stopName: "Kinathukadavu Stop 2" },
-    { stopName: "Elur Privu" },
-    { stopName: "Othakalmandapam" },
-    { stopName: "Malumichampatti" },
-    { stopName: "Aathupalam" },
-    { stopName: "Sundarapuram" },
-    { stopName: "Ukkadam" }
+    
+        { stopName: "Kinathukadavu" },
+        { stopName: "Kinathukadavu Old Bus Stand" },
+        { stopName: "Kinathukadavu Check Post" },
+        { stopName: "Arasampalayam Pirivu" },
+        { stopName: "Solavampalayam" },
+        { stopName: "Arasampalayam Railway Gate" },
+        { stopName: "Arasam Palyam" },
+        { stopName: "Shri Krishna Sweets Arasam Palyam" },
+        { stopName: "Karachery 1" },
+        { stopName: "Karachery" },
+        { stopName: "Vadachithur Pirivu" },
+        { stopName: "Panappatti High School" },
+        { stopName: "Panappatti" },
+        { stopName: "Madathukulam" },
+        { stopName: "Krishnapuram" },
+        { stopName: "Narasingapuram" },
+        { stopName: "Chettiyar Mill" },
+        { stopName: "Myvadi Pirivu" },
+        { stopName: "Palappampatti" },
+        { stopName: "Kalliyangadu" },
+        { stopName: "Rajavur Pirivu" },
+        { stopName: "Samathuvapuram" },
+        { stopName: "Periyakottai Pirivu" },
+        { stopName: "Vaikal Paalam" },
+        { stopName: "SV Mill Udumalpet" },
+        { stopName: "Shri GVG Visalakshi College" },
+        { stopName: "Gandhi Nagar Udumalaipettai" },
+        { stopName: "Udumalpet" },
+        { stopName: "Union Office Kinathukadavu" },
+        { stopName: "Kalankatuputhur" },
+        { stopName: "Gothavadi Pirivu" },
+        { stopName: "Kids Park School Kinathukadavu" },
+        { stopName: "Senram Palayam Privu" },
+        { stopName: "Thamaraikulam" },
+        { stopName: "Lakshmi Mills Thamaraikulam" },
+        { stopName: "LG Mullupadi" },
+        { stopName: "Mullur Patti Gate" },
+        { stopName: "Ellan Mill" },
+        { stopName: "Mettupalayam Pirivu" },
+        { stopName: "Kovilpalayam" },
+        { stopName: "Cheran Nagar" },
+        { stopName: "Santhegoundampalayam" },
+        { stopName: "Vaikkal Medu" },
+        { stopName: "Nanjegoundanputhur" },
+        { stopName: "Kullakka Palayam" },
+        { stopName: "Achipatti" },
+        { stopName: "Cheranthozili Colony" },
+        { stopName: "Sakthi Mill Jeeva Nagar" },
+        { stopName: "Jeeva Nagar" },
+        { stopName: "Vadakipalayam Pirivu" },
+        { stopName: "Thillai Nagar" },
+        { stopName: "Pollachi CTC Medu" },
+        { stopName: "Magalingapuram Aarch" },
+        { stopName: "Pollachi" }
+    
+    
 ];
 
 // Updated buses data
 const buses = [
     {
         busNo: "42A",
-        total_stops:11,
+        total_stops: 30,
         route: [
-            {  stopName: "Arasampalayam Stop 1", village: "Arasampalayam", forword: 0 ,reverse:45},
-            {  stopName: "Arasampalayam Stop 2", village: "Arasampalayam", forword: 6 ,reverse:39},
-            {  stopName: "Arasampalayam Stop 3", village: "Arasampalayam", forword: 9 ,reverse:36},
-            {  stopName: "Solpalayam Stop 1", village: "Solpalayam", forword: 12 ,reverse:33},
-            {  stopName: "Solpalayam Stop 2", village: "Solpalayam", forword: 15,reverse:30 },
-            {  stopName: "Solpalayam Stop 3", village: "Solpalayam", forword: 18 ,reverse:27},
-            {  stopName: "Palayam Stop 1", village: "Palayam", forword: 28 ,reverse:17},
-            {  stopName: "Palayam Stop 2", village: "Palayam", forword: 33 ,reverse:12},
-            {  stopName: "Palayam Stop 3", village: "Palayam", forword: 38 ,reverse:7},
-            {  stopName: "Kinathukadavu Stop 1", village: "Kinathukadavu", forword: 43 ,reverse:2},
-            {  stopName: "Kinathukadavu Stop 2", village: "Kinathukadavu", forword: 45 ,reverse:0}
+            { stopName: "Arasam Palyam", village: "Arasam Palyam", forword: 0, reverse: 90 },
+            { stopName: "Kinathukadavu Check Post", village: "Kinathukadavu", forword: 3, reverse: 87 },
+            { stopName: "Kinathukadavu Old Bus Stand", village: "Kinathukadavu", forword: 6, reverse: 84 },
+            { stopName: "Kinathukadavu", village: "Kinathukadavu", forword: 10, reverse: 80 },
+            { stopName: "Union Office Kinathukadavu", village: "Kinathukadavu", forword: 13, reverse: 77 },
+            { stopName: "Kalankatuputhur", village: "Kalankatuputhur", forword: 17, reverse: 73 },
+            { stopName: "Gothavadi Pirivu", village: "Gothavadi", forword: 21, reverse: 69 },
+            { stopName: "Kids Park School Kinathukadavu", village: "Kids Park", forword: 24, reverse: 66 },
+            { stopName: "Senram Palayam Privu", village: "Senram Palayam", forword: 28, reverse: 62 },
+            { stopName: "Thamaraikulam", village: "Thamaraikulam", forword: 32, reverse: 58 },
+            { stopName: "Lakshmi Mills Thamaraikulam", village: "Lakshmi Mills", forword: 35, reverse: 55 },
+            { stopName: "LG Mullupadi", village: "LG Mullupadi", forword: 38, reverse: 52 },
+            { stopName: "Mullur Patti Gate", village: "Mullur Patti", forword: 41, reverse: 49 },
+            { stopName: "Ellan Mill", village: "Ellan Mill", forword: 44, reverse: 46 },
+            { stopName: "Mettupalayam Pirivu", village: "Mettupalayam", forword: 47, reverse: 43 },
+            { stopName: "Kovilpalayam", village: "Kovilpalayam", forword: 50, reverse: 40 },
+            { stopName: "Cheran Nagar", village: "Cheran Nagar", forword: 53, reverse: 37 },
+            { stopName: "Santhegoundampalayam", village: "Santhegoundampalayam", forword: 56, reverse: 34 },
+            { stopName: "Vaikkal Medu", village: "Vaikkal Medu", forword: 59, reverse: 31 },
+            { stopName: "Nanjegoundanputhur", village: "Nanjegoundanputhur", forword: 62, reverse: 28 },
+            { stopName: "Kullakka Palayam", village: "Kullakka Palayam", forword: 65, reverse: 25 },
+            { stopName: "Achipatti", village: "Achipatti", forword: 68, reverse: 22 },
+            { stopName: "Cheranthozili Colony", village: "Cheranthozili Colony", forword: 71, reverse: 19 },
+            { stopName: "Sakthi Mill Jeeva Nagar", village: "Sakthi Mill", forword: 74, reverse: 16 },
+            { stopName: "Jeeva Nagar", village: "Jeeva Nagar", forword: 77, reverse: 13 },
+            { stopName: "Vadakipalayam Pirivu", village: "Vadakipalayam", forword: 80, reverse: 10 },
+            { stopName: "Cheran Nagar", village: "Cheran Nagar", forword: 83, reverse: 7 },
+            { stopName: "Thillai Nagar", village: "Thillai Nagar", forword: 86, reverse: 4 },
+            { stopName: "Pollachi CTC Medu", village: "Pollachi", forword: 88, reverse: 2 },
+            { stopName: "Magalingapuram Aarch", village: "Pollachi", forword: 89, reverse: 1 },
+            { stopName: "Pollachi", village: "Pollachi", forword: 90, reverse: 0 }
         ],
-        trips: ["09:00", "11:00", "13:00","15:00","17:00"]
+        trips: ["06:30", "08:30", "10:30", "12:30", "14:30", "16:30", "18:30", "20:30"]
     },
+    
     {
         busNo: "33A",
-        total_stops:8,
+        total_stops: 13,
         route: [
-            {  stopName: "Ukkadam", village: "Ukkadam", forword: 0 ,reverse:30},
-            { stopName: "Sundarapuram", village: "Sundarapuram", forword: 3 ,reverse:27 },
-            {  stopName: "Aathupalam", village: "Aathupalam" , forword: 6 ,reverse:24},
-            {  stopName: "Malumichampatti", village: "Malumichampatti" , forword: 9 ,reverse:21},
-            {  stopName: "Othakalmandapam", village: "Othakalmandapam" , forword: 12 ,reverse:18},
-            {  stopName: "Elur Privu", village: "Elur Privu" , forword: 15 ,reverse:15},
-            {  stopName: "Kinathukadavu Stop 1", village: "Kinathukadavu", forword: 25 ,reverse:5 },
-            {  stopName: "Kinathukadavu Stop 2", village: "Kinathukadavu" , forword: 30 ,reverse:0}
+            { stopName: "Kinathukadavu", village: "Kinathukadavu", forword: 0, reverse: 70 },
+            { stopName: "Kinathukadavu Old Bus Stand", village: "Kinathukadavu", forword: 3, reverse: 67 },
+            { stopName: "Kinathukadavu Check Post", village: "Kinathukadavu", forword: 7, reverse: 63 },
+            { stopName: "Arasampalayam Pirivu", village: "Arasampalayam", forword: 12, reverse: 58 },
+            { stopName: "Solavampalayam", village: "Solavampalayam", forword: 18, reverse: 52 },
+            { stopName: "Arasampalayam Railway Gate", village: "Arasampalayam", forword: 23, reverse: 47 },
+            { stopName: "Arasam Palyam", village: "Arasam Palyam", forword: 28, reverse: 42 },
+            { stopName: "Shri Krishna Sweets Arasampalayam", village: "Shri Krishna Sweets", forword: 33, reverse: 37 },
+            { stopName: "Karachery 1", village: "Karachery", forword: 38, reverse: 32 },
+            { stopName: "Karachery", village: "Karachery", forword: 42, reverse: 28 },
+            { stopName: "Vadachithur Pirivu", village: "Vadachithur", forword: 50, reverse: 20 },
+            { stopName: "Panappatti High School", village: "Panappatti", forword: 60, reverse: 10 },
+            { stopName: "Panappatti", village: "Panappatti", forword: 70, reverse: 0 }
         ],
-        trips: ["09:00", "11:00", "13:00","15:00","17:00"]
+        trips: ["07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00"]
     }
+    ,
+    {
+        busNo: "29",
+        total_stops: 15,
+        route: [
+            { stopName: "Madathukulam", village: "Madathukulam", forword: 0, reverse: 83 },
+            { stopName: "Krishnapuram", village: "Krishnapuram", forword: 4, reverse: 79 },
+            { stopName: "Narasingapuram", village: "Narasingapuram", forword: 13, reverse: 70 },
+            { stopName: "Chettiyar Mill", village: "Chettiyar Mill", forword: 20, reverse: 63 },
+            { stopName: "Myvadi Pirivu", village: "Myvadi Pirivu", forword: 30, reverse: 53 },
+            { stopName: "Palappampatti", village: "Palappampatti", forword: 35, reverse: 48 },
+            { stopName: "Kalliyangadu", village: "Kalliyangadu", forword: 38, reverse: 45 },
+            { stopName: "Rajavur Pirivu", village: "Rajavur Pirivu", forword: 42, reverse: 41 },
+            { stopName: "Samathuvapuram", village: "Samathuvapuram", forword: 44, reverse: 39 },
+            { stopName: "Periyakottai Pirivu", village: "Periyakottai Pirivu", forword: 50, reverse: 33 },
+            { stopName: "Vaikal Paalam", village: "Vaikal Paalam", forword: 56, reverse: 27 },
+            { stopName: "SV Mill Udumalpet", village: "SV Mill Udumalpet", forword: 64, reverse: 19 },
+            { stopName: "Shri GVG Visalakshi College", village: "Shri GVG Visalakshi College", forword: 74, reverse: 9 },
+            { stopName: "Gandhi Nagar Udumalaipettai", village: "Gandhi Nagar Udumalaipettai", forword: 80, reverse: 3 },
+            { stopName: "Udumalpet", village: "Udumalpet", forword: 83, reverse: 0 }
+        ],
+        trips: ["07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00"]
+    }
+    
+    
 ];
 
 // Search API: Returns matching stops based on query (case-insensitive)
@@ -71,8 +162,109 @@ app.get("/api/stops", (req, res) => {
     // Filter stops based on query (matching stop name)
     const result = stops.filter(stop => stop.stopName.toLowerCase().includes(query));
 
+
     res.json(result);
 });
+
+// API to handle only "To" location and return available buses
+app.get("/api/to-location-buses", (req, res) => {
+    const to = req.query.to ? req.query.to.toLowerCase() : "";
+    const busNo = req.query.busNo ? req.query.busNo.toLowerCase() : "";
+
+    if (!to) {
+        return res.status(400).json({ error: "Please provide a 'To' location." });
+    }
+
+    // Find all buses that include the "To" location in their route
+    const matchingBuses = buses.filter(bus => {
+        // Check if the bus includes the "To" location
+        const includesToLocation = bus.route.some(stop => stop.stopName.toLowerCase() === to);
+
+        // Optionally filter by bus number
+        const matchesBusNo = busNo ? bus.busNo.toLowerCase().includes(busNo) : true;
+
+        return includesToLocation && matchesBusNo;
+    });
+
+    if (matchingBuses.length === 0) {
+        return res.status(404).json({ error: "No buses found for the provided 'To' location." });
+    }
+
+    // Prepare the response with the three scenarios
+    const availableBuses = matchingBuses.map(bus => {
+        const toIndex = bus.route.findIndex(stop => stop.stopName.toLowerCase() === to);
+        const firstStop = bus.route[0].stopName;
+        const lastStop = bus.route[bus.route.length - 1].stopName;
+
+        // Case 1: "To" location is the first stop
+        if (toIndex === 0) {
+            return {
+                busNo: bus.busNo,
+                from: lastStop, // Assume the user is coming from the last stop
+                to: firstStop, // "To" location is the first stop
+                tripTimes: bus.trips.map(trip => ({
+                    fromTime: trip,
+                    toTime: calculateToTime(trip, bus.route[toIndex].reverse)
+                })),
+                totalStops: bus.route.length
+            };
+        }
+
+        // Case 2: "To" location is the last stop
+        if (toIndex === bus.route.length - 1) {
+            return {
+                busNo: bus.busNo,
+                from: firstStop, // Assume the user is coming from the first stop
+                to: lastStop, // "To" location is the last stop
+                tripTimes: bus.trips.map(trip => ({
+                    fromTime: trip,
+                    toTime: calculateToTime(trip, bus.route[toIndex].forword)
+                })),
+                totalStops: bus.route.length
+            };
+        }
+
+        // Case 3: "To" location is between the first and last stop
+        return [
+            {
+                busNo: bus.busNo,
+                from: firstStop, // First stop to "To" location
+                to: bus.route[toIndex].stopName,
+                tripTimes: bus.trips.map(trip => ({
+                    fromTime: trip,
+                    toTime: calculateToTime(trip, bus.route[toIndex].forword)
+                })),
+                totalStops: toIndex + 1
+            },
+            {
+                busNo: bus.busNo,
+                from: lastStop, // Last stop to "To" location
+                to: bus.route[toIndex].stopName,
+                tripTimes: bus.trips.map(trip => ({
+                    fromTime: trip,
+                    toTime: calculateToTime(trip, bus.route[toIndex].reverse)
+                })),
+                totalStops: bus.route.length - toIndex
+            }
+        ];
+    }).flat(); // Flatten the array of scenarios
+
+    res.json(availableBuses);
+});
+
+// Helper function to calculate "toTime" based on "fromTime" and duration
+function calculateToTime(fromTime, duration) {
+    const [hours, minutes] = fromTime.split(":").map(Number);
+    const tripStartTime = new Date();
+    tripStartTime.setHours(hours, minutes, 0, 0);
+
+    const toTime = new Date(tripStartTime);
+    toTime.setMinutes(toTime.getMinutes() + duration);
+
+    return toTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+
 app.get("/api/buses", (req, res) => {
     const { from, to, busNo } = req.query;
 

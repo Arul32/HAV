@@ -243,3 +243,18 @@ button:hover {
     border-radius: 20px;
     
 }
+.bus-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.bus-item:hover {
+    background-color: #e0e0e0;
+}
+
+.bus-info div {
+    margin-bottom: 5px;
+}
