@@ -13,30 +13,28 @@
     <div class="search-container">
         <div style="position: relative;">
             <input type="text" id="from" placeholder="From" oninput="fetchSuggestions('from')" autocomplete="off">
-            <div class="suggestions" id="from-suggestions"></div>
         </div>
-        
+    
         <div style="position: relative;">
             <input type="text" id="to" placeholder="To" oninput="fetchSuggestions('to')" autocomplete="off">
-            <div class="suggestions" id="to-suggestions"></div>
         </div>
-
+    
         <input type="text" id="bus" placeholder="Bus No (Optional)">
-        
         <select id="timeOption" onchange="toggleTimeInput()">
             <option value="current">Current Time</option>
             <option value="set">Set Time</option>
-            <option value="notset" selected>Not Set</option> <!-- Default option -->
+            <option value="notset" selected>Not Set</option>
         </select>
         <input type="time" id="setTime" disabled>
-        <button onclick="helperfunction()">Search</button>
+        <button onclick="search()">Search</button>
     </div>
-    <div id="results" class="results"></div>
-
-
-
-
-
+    
+    <!-- Results Container -->
+    <div id="results" class="results">
+        <!-- Suggestions will be displayed here -->
+    </div>
+    
+    <h3>Stop View</h3>
     <div class="stop">
         <div class="outer">
             <p class="para">BUS NO:33A</p>
@@ -69,6 +67,8 @@
     
         </div>
     </div>
+
+    <h3>Seat Availability</h3>
   
    
 
@@ -87,46 +87,254 @@
         }
 
         function fetchSuggestions(inputId) {
-            const query = document.getElementById(inputId).value.trim();
-            if (!query) {
-                document.getElementById(`${inputId}-suggestions`).style.display = "none";
+    const query = document.getElementById(inputId).value.trim();
+    const resultsDiv = document.getElementById("results");
+
+    if (!query) {
+        resultsDiv.style.display = "none";
+        return;
+    }
+
+    fetch(`http://localhost:8080/api/stops?q=${query}`)
+        .then(response => response.json())
+        .then(data => {
+            resultsDiv.innerHTML = ""; // Clear previous results
+
+            if (data.length === 0) {
+                resultsDiv.style.display = "none";
                 return;
             }
 
-            fetch(`http://localhost:8080/api/stops?q=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    const suggestionsBox = document.getElementById(`${inputId}-suggestions`);
-                    suggestionsBox.innerHTML = "";
-                    if (data.length === 0) {
-                        suggestionsBox.style.display = "none";
-                        return;
-                    }
+            // Show only 4 suggestions initially
+            const initialSuggestions = data.slice(0, 4);
+            initialSuggestions.forEach(stop => {
+                const div = document.createElement("div");
+                div.classList.add("suggestion-item");
+                div.innerHTML = `<strong>Stop Name:</strong> ${stop.stopName}`;
+                div.onclick = () => {
+                    document.getElementById(inputId).value = stop.stopName;
+                    resultsDiv.style.display = "none"; // Hide suggestions after selection
+                };
+                resultsDiv.appendChild(div);
+            });
 
-                    data.forEach(stop => {
+            // Add "See More" button if there are more than 4 suggestions
+            if (data.length > 4) {
+                const seeMoreDiv = document.createElement("div");
+                seeMoreDiv.classList.add("see-more");
+                seeMoreDiv.textContent = "See More";
+                seeMoreDiv.onclick = () => {
+                    // Show the next 4 suggestions (up to 8 total)
+                    const remainingSuggestions = data.slice(4, 8);
+                    remainingSuggestions.forEach(stop => {
                         const div = document.createElement("div");
-                        div.textContent = stop.stopName;
+                        div.classList.add("suggestion-item");
+                        div.innerHTML = `<strong>Stop Name:</strong> ${stop.stopName}`;
                         div.onclick = () => {
                             document.getElementById(inputId).value = stop.stopName;
-                            suggestionsBox.style.display = "none";
+                            resultsDiv.style.display = "none";
                         };
-                        suggestionsBox.appendChild(div);
+                        resultsDiv.appendChild(div);
                     });
 
-                    suggestionsBox.style.display = "block";
-                })
-                .catch(error => console.error("Error fetching suggestions:", error));
-        }
+                    // Remove the "See More" button after expanding
+                    seeMoreDiv.remove();
+                };
+                resultsDiv.appendChild(seeMoreDiv);
+            }
 
-
-     function  helperfunction(){
-        const from = document.getElementById("from").value.trim();
+            resultsDiv.style.display = "block"; // Show the results div
+        })
+        .catch(error => {
+            console.error("Error fetching suggestions:", error);
+            resultsDiv.style.display = "none";
+        });
+}
+function search() {
+    const from = document.getElementById("from").value.trim();
     const to = document.getElementById("to").value.trim();
     const bus = document.getElementById("bus").value.trim();
     const timeOption = document.getElementById("timeOption").value;
     const setTime = document.getElementById("setTime").value;
-        if(from && to){
-            let filterTime = null;
+
+    if (!to) {
+        alert("Please enter at least a 'To' location.");
+        return;
+    }
+
+    // If "From" location is provided, call searchBus
+    if (from) {
+        searchBus();
+    }
+    // If only "To" location is provided, call searchToLocation
+    else {
+        searchToLocation();
+    }
+}
+
+function searchToLocation() {
+    const to = document.getElementById("to").value.trim();
+    const bus = document.getElementById("bus").value.trim();
+    const timeOption = document.getElementById("timeOption").value;
+    const setTime = document.getElementById("setTime").value;
+
+    if (!to) {
+        alert("Please enter a 'To' location.");
+        return;
+    }
+
+    // Determine the filter time based on the selected option
+    let filterTime = null;
+    if (timeOption === "set" && setTime) {
+        // Use user-set time
+        const [hours, minutes] = setTime.split(":").map(Number);
+        filterTime = new Date();
+        filterTime.setHours(hours, minutes, 0, 0); // Set the user-defined hours & minutes
+    } else if (timeOption === "current") {
+        // Use current time
+        filterTime = new Date();
+    }
+
+    // Check if the API endpoint exists
+    const apiUrl = `http://localhost:8080/api/to-location-buses?to=${to}&busNo=${bus}`;
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                // Handle 404 or other HTTP errors
+                if (response.status === 404) {
+                    throw new Error("The requested resource was not found.");
+                } else {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            if (!Array.isArray(data)) {
+                console.error("Expected an array but got:", data);
+                resultsDiv.innerHTML = "<p>No buses found.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = "<p>No buses found.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            // Filter buses based on time option
+            const filteredBuses = data.filter(bus => {
+                if (timeOption === "notset") {
+                    return true; // Show all buses
+                } else {
+                    return bus.tripTimes.some(trip => {
+                        const tripTime = parseTimeString(trip.fromTime);
+                        return tripTime >= filterTime;
+                    });
+                }
+            });
+
+            if (filteredBuses.length === 0) {
+                resultsDiv.innerHTML = "<p>No buses found for the selected time.</p>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            // Sort buses based on the closest arrival time to the filterTime
+            filteredBuses.sort((a, b) => {
+                const closestTimeA = findClosestTime(a.tripTimes, filterTime);
+                const closestTimeB = findClosestTime(b.tripTimes, filterTime);
+
+                return closestTimeA - closestTimeB; // Sort in ascending order
+            });
+
+            // Display sorted buses
+            filteredBuses.forEach(bus => {
+                const busItem = document.createElement("div");
+                busItem.classList.add("bus-item");
+
+                // Bus information
+                const busInfo = `
+                    <div class="bus-info">
+                        <div><strong>Bus No:</strong> ${bus.busNo}</div>
+                        <div><strong>Route:</strong> ${bus.from} to ${bus.to}</div>
+                      
+                    </div>
+                `;
+
+                // Filter trip times based on the filter time
+                const filteredTripTimes = bus.tripTimes.filter(trip => {
+                    const tripTime = parseTimeString(trip.fromTime);
+                    return tripTime >= filterTime;
+                });
+
+                // Timings (filtered based on the filter time)
+                const timingsHTML = `
+    <div class="timings">
+        <select ${filteredTripTimes.length === 1 ? 'disabled' : ''}>
+            ${filteredTripTimes
+                .map(time => {
+                    const fromTime12 = convertTo12HourFormat(time.fromTime);
+                    const toTime12 = convertTo12HourFormat(time.toTime);
+                    return `
+                        <option value="${time.fromTime} - ${time.toTime}">
+                            ${fromTime12} - ${toTime12}
+                        </option>
+                    `;
+                }).join("")}
+        </select>
+    </div>
+`;
+                // Combine bus info and timings
+                busItem.innerHTML = busInfo + timingsHTML;
+                resultsDiv.appendChild(busItem);
+
+                // Add click event listener to the bus item
+                busItem.addEventListener("click", () => {
+                    // Get the selected time from the dropdown
+                    const selectedTime = busItem.querySelector("select").value.split(" - ")[0];
+
+                    // Fetch the full route data for the selected bus
+                    fetch(`http://localhost:8080/api/bus-route?busNo=${bus.busNo}&isReverseDirection=${bus.isReverseDirection}`)
+                        .then(response => response.json())
+                        .then(routeData => {
+                            // Pass the selected time, direction, and "From" stop name to createOuterDivs
+                            createOuterDivs(routeData, selectedTime, bus.isReverseDirection, bus.from);
+                        })
+                        .catch(error => console.error("Error fetching route data:", error));
+                });
+            });
+
+            resultsDiv.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            const resultsDiv = document.getElementById("results");
+            if (resultsDiv) {
+                // Display a user-friendly message instead of logging the error
+                resultsDiv.innerHTML = "<p>No buses found for the selected location.</p>";
+                resultsDiv.style.display = "block";
+            }
+        });
+}
+function searchBus() {
+    const from = document.getElementById("from").value.trim();
+    const to = document.getElementById("to").value.trim();
+    const bus = document.getElementById("bus").value.trim();
+    const timeOption = document.getElementById("timeOption").value;
+    const setTime = document.getElementById("setTime").value;
+
+    if (!from || !to) {
+        alert("Please enter both 'From' and 'To' locations.");
+        return;
+    }
+
+    // Determine the filter time based on the selected option
+    let filterTime = null;
     if (timeOption === "set" && setTime) {
         // Use user-set time
         const [hours, minutes] = setTime.split(":").map(Number);
@@ -235,126 +443,24 @@
             resultsDiv.innerHTML = "<p>Error fetching data. Please try again.</p>";
             resultsDiv.style.display = "block";
         });
-        }
+}
+function convertTo12HourFormat(time24) {
+    const [hours, minutes] = time24.split(":");
+    let period = "AM";
+    let hours12 = parseInt(hours, 10);
 
-        else if(to && !from){
-            let filterTime = null;
-    if (timeOption === "set" && setTime) {
-        // Use user-set time
-        const [hours, minutes] = setTime.split(":").map(Number);
-        filterTime = new Date();
-        filterTime.setHours(hours, minutes, 0, 0); // Set the user-defined hours & minutes
-    } else if (timeOption === "current") {
-        // Use current time
-        filterTime = new Date();
+    if (hours12 >= 12) {
+        period = "PM";
+        if (hours12 > 12) {
+            hours12 -= 12;
+        }
+    } else if (hours12 === 0) {
+        hours12 = 12; // Handle midnight (00:00)
     }
 
-    fetch(`http://localhost:8080/api/to-location-buses?to=${to}&busNo=${bus}`)
-        .then(response => response.json())
-        .then(data => {
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "";
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = "<p>No buses found.</p>";
-                resultsDiv.style.display = "block";
-                return;
-            }
-
-            // Filter buses based on time option
-            const filteredBuses = data.filter(bus => {
-                if (timeOption === "notset") {
-                    return true; // Show all buses
-                } else {
-                    return bus.tripTimes.some(trip => {
-                        const tripTime = parseTimeString(trip.fromTime);
-                        return tripTime >= filterTime;
-                    });
-                }
-            });
-
-            if (filteredBuses.length === 0) {
-                resultsDiv.innerHTML = "<p>No buses found for the selected time.</p>";
-                resultsDiv.style.display = "block";
-                return;
-            }
-
-            // Sort buses based on the closest arrival time to the filterTime
-            filteredBuses.sort((a, b) => {
-                const closestTimeA = findClosestTime(a.tripTimes, filterTime);
-                const closestTimeB = findClosestTime(b.tripTimes, filterTime);
-
-                return closestTimeA - closestTimeB; // Sort in ascending order
-            });
-
-            // Display sorted buses
-            filteredBuses.forEach(bus => {
-                const busItem = document.createElement("div");
-                busItem.classList.add("bus-item");
-
-                // Bus information
-                const busInfo = `
-                    <div class="bus-info">
-                        <div><strong>Bus No:</strong> ${bus.busNo}</div>
-                        <div><strong>Route:</strong> ${bus.from} to ${bus.to}</div>
-                    </div>
-                `;
-
-                // Filter trip times based on the filter time
-                const filteredTripTimes = bus.tripTimes.filter(trip => {
-                    const tripTime = parseTimeString(trip.fromTime);
-                    return tripTime >= filterTime;
-                });
-
-                // Timings (filtered based on the filter time)
-                const timingsHTML = `
-                    <div class="timings">
-                        <select ${filteredTripTimes.length === 1 ? 'disabled' : ''}>
-                            ${filteredTripTimes
-                                .map(time => `
-                                    <option value="${time.fromTime} - ${time.toTime}">
-                                        ${time.fromTime} - ${time.toTime}
-                                    </option>
-                                `).join("")}
-                        </select>
-                    </div>
-                `;
-
-                // Combine bus info and timings
-                busItem.innerHTML = busInfo + timingsHTML;
-                resultsDiv.appendChild(busItem);
-
-                // Add click event listener to the bus item
-                busItem.addEventListener("click", () => {
-                    // Get the selected time from the dropdown
-                    const selectedTime = busItem.querySelector("select").value.split(" - ")[0];
-
-                    // Fetch the full route data for the selected bus
-                    fetch(`http://localhost:8080/api/bus-route?busNo=${bus.busNo}`)
-                        .then(response => response.json())
-                        .then(routeData => {
-                            // Pass the selected time and "From" stop name to createOuterDivs
-                            createOuterDivs(routeData, selectedTime, false, bus.from);
-                        })
-                        .catch(error => console.error("Error fetching route data:", error));
-                });
-            });
-
-            resultsDiv.style.display = "block";
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-            resultsDiv.innerHTML = "<p>Error fetching data. Please try again.</p>";
-            resultsDiv.style.display = "block";
-        });
-        }
-        else {
-            console.log("enter the from and to or to location ")
-            return;
-        }
-       }
-
-   
+    return `${hours12}:${minutes} ${period}`;
+}
+    
 // Function to create multiple outer divs based on route data
 function createOuterDivs(routeData, selectedTime, isReverseDirection, fromStopName) {
     // Clear any existing outer divs

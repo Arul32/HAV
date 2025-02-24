@@ -64,32 +64,53 @@ button {
 }
 button:hover {
     background-color: #0056b3;
-}
-.suggestions {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    max-height: 150px;
-    overflow-y: auto;
-    width: 200px;
-    display: none;
-}
-.suggestions div {
-    padding: 8px;
-    cursor: pointer;
-}
-.suggestions div:hover {
-    background: #f0f0f0;
-}
-.results {
+}.results {
     margin-top: 20px;
     width: 80%;
     display: none;
-   
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-left: 100px;
+    background: white; /* Match the background color */
+    max-height: 200px; /* Limit height to show 4 items initially */
+    overflow-y: auto; /* Always show a scrollbar */
+}
+.suggestion-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px; /* Increase text size */
+    color: #333;
+    cursor: pointer;
+    text-align: left; /* Align text to the left */
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0; /* Match the hover background color */
+}
+
+.suggestion-item:last-child {
+    border-bottom: none; /* Remove border for the last item */
+}
+
+.suggestion-item strong {
+    font-weight: bold;
+    color: #000;
+}
+
+.see-more {
+    padding: 10px;
+    text-align: center; /* Center the "See More" button */
+    cursor: pointer;
+    color: #007bff; /* Blue color for "See More" */
+    font-weight: bold;
+}
+
+.see-more:hover {
+    background: #f0f0f0; /* Hover effect for "See More" */
+}
+.see-more:hover {
+    background: #f0f0f0; /* Hover effect for "See More" */
 }
 .bus-item {
     display: flex;
@@ -114,6 +135,22 @@ button:hover {
     align-items: center;
     gap: 10px;
 }
+.bus-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.bus-item:hover {
+    background-color: #e0e0e0;
+}
+
+.bus-info div {
+    margin-bottom: 5px;
+}
+
 .stop {
     display: flex;
     border: 2px solid black;
@@ -243,18 +280,4 @@ button:hover {
     border-radius: 20px;
     
 }
-.bus-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-}
 
-.bus-item:hover {
-    background-color: #e0e0e0;
-}
-
-.bus-info div {
-    margin-bottom: 5px;
-}

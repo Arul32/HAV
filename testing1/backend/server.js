@@ -119,7 +119,7 @@ const buses = [
             { stopName: "Solavampalayam", village: "Solavampalayam", forword: 18, reverse: 52 },
             { stopName: "Arasampalayam Railway Gate", village: "Arasampalayam", forword: 23, reverse: 47 },
             { stopName: "Arasam Palyam", village: "Arasam Palyam", forword: 28, reverse: 42 },
-            { stopName: "Shri Krishna Sweets Arasampalayam", village: "Shri Krishna Sweets", forword: 33, reverse: 37 },
+            { stopName: "Shri Krishna Sweets Arasam Palyam", village: "Shri Krishna Sweets", forword: 33, reverse: 37 },
             { stopName: "Karachery 1", village: "Karachery", forword: 38, reverse: 32 },
             { stopName: "Karachery", village: "Karachery", forword: 42, reverse: 28 },
             { stopName: "Vadachithur Pirivu", village: "Vadachithur", forword: 50, reverse: 20 },
@@ -162,109 +162,8 @@ app.get("/api/stops", (req, res) => {
     // Filter stops based on query (matching stop name)
     const result = stops.filter(stop => stop.stopName.toLowerCase().includes(query));
 
-
     res.json(result);
 });
-
-// API to handle only "To" location and return available buses
-app.get("/api/to-location-buses", (req, res) => {
-    const to = req.query.to ? req.query.to.toLowerCase() : "";
-    const busNo = req.query.busNo ? req.query.busNo.toLowerCase() : "";
-
-    if (!to) {
-        return res.status(400).json({ error: "Please provide a 'To' location." });
-    }
-
-    // Find all buses that include the "To" location in their route
-    const matchingBuses = buses.filter(bus => {
-        // Check if the bus includes the "To" location
-        const includesToLocation = bus.route.some(stop => stop.stopName.toLowerCase() === to);
-
-        // Optionally filter by bus number
-        const matchesBusNo = busNo ? bus.busNo.toLowerCase().includes(busNo) : true;
-
-        return includesToLocation && matchesBusNo;
-    });
-
-    if (matchingBuses.length === 0) {
-        return res.status(404).json({ error: "No buses found for the provided 'To' location." });
-    }
-
-    // Prepare the response with the three scenarios
-    const availableBuses = matchingBuses.map(bus => {
-        const toIndex = bus.route.findIndex(stop => stop.stopName.toLowerCase() === to);
-        const firstStop = bus.route[0].stopName;
-        const lastStop = bus.route[bus.route.length - 1].stopName;
-
-        // Case 1: "To" location is the first stop
-        if (toIndex === 0) {
-            return {
-                busNo: bus.busNo,
-                from: lastStop, // Assume the user is coming from the last stop
-                to: firstStop, // "To" location is the first stop
-                tripTimes: bus.trips.map(trip => ({
-                    fromTime: trip,
-                    toTime: calculateToTime(trip, bus.route[toIndex].reverse)
-                })),
-                totalStops: bus.route.length
-            };
-        }
-
-        // Case 2: "To" location is the last stop
-        if (toIndex === bus.route.length - 1) {
-            return {
-                busNo: bus.busNo,
-                from: firstStop, // Assume the user is coming from the first stop
-                to: lastStop, // "To" location is the last stop
-                tripTimes: bus.trips.map(trip => ({
-                    fromTime: trip,
-                    toTime: calculateToTime(trip, bus.route[toIndex].forword)
-                })),
-                totalStops: bus.route.length
-            };
-        }
-
-        // Case 3: "To" location is between the first and last stop
-        return [
-            {
-                busNo: bus.busNo,
-                from: firstStop, // First stop to "To" location
-                to: bus.route[toIndex].stopName,
-                tripTimes: bus.trips.map(trip => ({
-                    fromTime: trip,
-                    toTime: calculateToTime(trip, bus.route[toIndex].forword)
-                })),
-                totalStops: toIndex + 1
-            },
-            {
-                busNo: bus.busNo,
-                from: lastStop, // Last stop to "To" location
-                to: bus.route[toIndex].stopName,
-                tripTimes: bus.trips.map(trip => ({
-                    fromTime: trip,
-                    toTime: calculateToTime(trip, bus.route[toIndex].reverse)
-                })),
-                totalStops: bus.route.length - toIndex
-            }
-        ];
-    }).flat(); // Flatten the array of scenarios
-
-    res.json(availableBuses);
-});
-
-// Helper function to calculate "toTime" based on "fromTime" and duration
-function calculateToTime(fromTime, duration) {
-    const [hours, minutes] = fromTime.split(":").map(Number);
-    const tripStartTime = new Date();
-    tripStartTime.setHours(hours, minutes, 0, 0);
-
-    const toTime = new Date(tripStartTime);
-    toTime.setMinutes(toTime.getMinutes() + duration);
-
-    return toTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-
 app.get("/api/buses", (req, res) => {
     const { from, to, busNo } = req.query;
 
@@ -351,6 +250,115 @@ app.get("/api/bus-route", (req, res) => {
         isReverseDirection: isReverseDirection === "true"
     });
 });
+
+app.get("/api/to-location-buses", (req, res) => {
+    const to = req.query.to ? req.query.to.toLowerCase() : "";
+    const busNo = req.query.busNo ? req.query.busNo.toLowerCase() : "";
+
+    if (!to) {
+        return res.status(400).json({ error: "Please provide a 'To' location." });
+    }
+
+    // Find buses that include the "To" location and match the bus number
+    const matchingBuses = buses.filter(bus => {
+        const includesTo = bus.route.some(stop => stop.stopName.toLowerCase() === to);
+        const matchesBusNo = busNo ? bus.busNo.toLowerCase().includes(busNo) : true;
+        return includesTo && matchesBusNo;
+    });
+
+    if (matchingBuses.length === 0) {
+        return res.status(404).json({ error: "No buses found for the provided 'To' location and bus number." });
+    }
+
+    // Prepare the response with the three scenarios
+    const availableBuses = matchingBuses.map(bus => {
+        const toIndex = bus.route.findIndex(stop => stop.stopName.toLowerCase() === to);
+        const firstStop = bus.route[0].stopName;
+        const lastStop = bus.route[bus.route.length - 1].stopName;
+
+        // Case 1: "To" location is the first stop (reverse direction)
+        if (toIndex === 0) {
+            return {
+                busNo: bus.busNo,
+                from: lastStop,
+                to: firstStop,
+                tripTimes: bus.trips
+                    .filter((_, index) => index % 2 !== 0) // Odd-indexed timings for reverse direction
+                    .map(trip => ({
+                        fromTime: trip,
+                        toTime: calculateToTime(trip, bus.route[toIndex].reverse) // Use reverse time
+                    })),
+                totalStops: bus.route.length,
+                isReverseDirection: true // Indicate reverse direction
+            };
+        }
+
+        // Case 2: "To" location is the last stop (forward direction)
+        if (toIndex === bus.route.length - 1) {
+            return {
+                busNo: bus.busNo,
+                from: firstStop,
+                to: lastStop,
+                tripTimes: bus.trips
+                    .filter((_, index) => index % 2 === 0) // Even-indexed timings for forward direction
+                    .map(trip => ({
+                        fromTime: trip,
+                        toTime: calculateToTime(trip, bus.route[toIndex].forword) // Use forward time
+                    })),
+                totalStops: bus.route.length,
+                isReverseDirection: false // Indicate forward direction
+            };
+        }
+
+        // Case 3: "To" location is between the first and last stop
+        return [
+            {
+                busNo: bus.busNo,
+                from: firstStop,
+                to: bus.route[toIndex].stopName,
+                tripTimes: bus.trips
+                    .filter((_, index) => index % 2 === 0) // Even-indexed timings for forward direction
+                    .map(trip => ({
+                        fromTime: trip,
+                        toTime: calculateToTime(trip, bus.route[toIndex].forword) // Use forward time
+                    })),
+                totalStops: toIndex + 1,
+                isReverseDirection: false // Indicate forward direction
+            },
+            {
+                busNo: bus.busNo,
+                from: lastStop,
+                to: bus.route[toIndex].stopName,
+                tripTimes: bus.trips
+                    .filter((_, index) => index % 2 !== 0) // Odd-indexed timings for reverse direction
+                    .map(trip => ({
+                        fromTime: trip,
+                        toTime: calculateToTime(trip, bus.route[toIndex].reverse) // Use reverse time
+                    })),
+                totalStops: bus.route.length - toIndex,
+                isReverseDirection: true // Indicate reverse direction
+            }
+        ];
+    }).flat(); // Flatten the array of scenarios
+
+    res.json(availableBuses);
+});
+
+// Helper function to calculate "toTime" in 24-hour format
+function calculateToTime(fromTime, duration) {
+    const [hours, minutes] = fromTime.split(":").map(Number);
+    const tripStartTime = new Date();
+    tripStartTime.setHours(hours, minutes, 0, 0);
+
+    const toTime = new Date(tripStartTime);
+    toTime.setMinutes(toTime.getMinutes() + duration);
+
+    // Format the time in 24-hour format
+    const toHours = toTime.getHours().toString().padStart(2, "0");
+    const toMinutes = toTime.getMinutes().toString().padStart(2, "0");
+
+    return `${toHours}:${toMinutes}`;
+}
 // Start server
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
