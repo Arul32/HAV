@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus System</title>
+    <style>
+        .map {
+            width: 80%;
+            border: 2px solid black;
+        }
+        .bus-container {
+            display: grid;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            width: 220px;
+        }
+        .seat {
+            width: 40px;
+            height: 40px;
+            background-color: green;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .seat.booked {
+            background-color: red;
+        }
+        .space {
+            width: 20px;
+        }
+        .last-row {
+            display: flex;
+            justify-content: center;
+        }
+        .outer {
+            border: 2px solid black;
+            width: 80%;
+            display: flex;
+            padding: 10px;
+            justify-content: space-between;
+            border-radius: 10px;
+        }
+        .stop {
+            border: 2px solid black;
+            border-radius: 20px;
+            width: 25px;
+            height: 300px;
+            background-color: brown;
+        }
+        .stop.glow {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div class="map">
+        <p>MAP VIEW</p>
+        <img src="https://imgs.search.brave.com/Yhf3FMoDPUfaebieDvOqVQqY4y0i9iD37WcXVvsldD4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTM5/MjM1NjM0NS9waG90/by9jaXR5LXN0cmVl/dC1tYXAuanBnP3M9/NjEyeDYxMiZ3PTAm/az0yMCZjPVktQjNN/QkhVTXNtUDlKZk1z/eU5DQmp5U25rQnVJ/WXdmVHhIZW15VjZq/QzQ9" 
+             alt="Map" 
+             onclick="redirectToGoogleMaps()">
+    </div>
+    <h3>STOP VIEW</h3>
+    <div class="outer">
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+        <div class="stop"></div>
+    </div>
+    <h2>Bus Seat Availability</h2>
+    <div class="bus-container" id="bus">
+        <!-- Seats will be generated here by JavaScript -->
+    </div>
+
+    <script>
+        const bus = document.getElementById("bus");
+
+        function createSeat(number) {
+            const seat = document.createElement("div");
+            seat.classList.add("seat");
+            seat.innerText = number;
+            seat.onclick = () => seat.classList.toggle("booked");
+            return seat;
+        }
+
+        let seatNumber = 1;
+
+        // Generate 9 rows with 4 seats each (total 36 seats)
+        for (let i = 0; i < 9; i++) {
+            const row = document.createElement("div");
+            row.classList.add("row");
+
+            row.appendChild(createSeat(seatNumber++));
+            row.appendChild(createSeat(seatNumber++));
+
+            const space = document.createElement("div");
+            space.classList.add("space");
+            row.appendChild(space);
+
+            row.appendChild(createSeat(seatNumber++));
+            row.appendChild(createSeat(seatNumber++));
+
+            bus.appendChild(row);
+        }
+
+        // Last row with 4 seats, no space
+        const lastRow = document.createElement("div");
+        lastRow.classList.add("last-row");
+
+        for (let i = 0; i < 4; i++) {
+            lastRow.appendChild(createSeat(seatNumber++));
+        }
+
+        bus.appendChild(lastRow);
+
+        // Function to redirect to Google Maps
+        async function redirectToGoogleMaps() {
+            try {
+                const response = await fetch('http://localhost:3000/gps');
+                const data = await response.json();
+                if (data.latitude && data.longitude) {
+                    window.open(`https://www.google.com/maps?q=${data.latitude},${data.longitude}`, '_blank');
+                } else {
+                    alert('GPS data not available yet.');
+                }
+            } catch (error) {
+                console.error('Error fetching GPS data:', error);
+            }
+        }
+
+        // Function to update stop glow
+        async function updateStopGlow() {
+    try {
+        const response = await fetch('http://localhost:3000/button'); // Fetch current stop data
+        const data = await response.json(); // Parse JSON
+        console.log("Stop Data Received:", data); // Debugging
+
+        const stops = document.querySelectorAll('.stop');
+
+        // Reset all stops first (remove glow)
+        stops.forEach(stop => stop.classList.remove('glow'));
+
+        if (data.forward) {
+            // Forward direction: Glow stops up to currentStop
+            for (let i = 0; i <= data.currentStop; i++) {
+                stops[i].classList.add('glow');
+            }
+        } else {
+            // Reverse direction: Keep last stop glowing, add previous stops
+            for (let i = data.currentStop; i < stops.length; i++) {
+                stops[i].classList.add('glow');
+            }
+        }
+    } catch (error) {
+        console.error('Error updating stop glow:', error);
+    }
+}
+
+// Handle button press to send request and update UI instantly
+document.body.addEventListener("click", async function() {
+    try {
+        console.log("Button Pressed! Sending Request...");
+
+        const response = await fetch('http://localhost:3000/button', { method: 'POST' });
+        const data = await response.json();
+        console.log("Button API Response:", data); // Debugging
+
+        updateStopGlow(); // Instantly update UI after button press
+    } catch (error) {
+        console.error('Error sending button press:', error);
+    }
+});
+
+        // Function to update seat colors based on IR sensor data
+       
+ 
+    async function updateSeatColors() {
+        try {
+            const response = await fetch('http://localhost:3000/ir');
+            const data = await response.json();
+            console.log("Received IR Sensor Data:", data); // Debugging
+
+            const seats = document.querySelectorAll('.seat');
+
+            // Reset all seats to green
+            seats.forEach(seat => seat.style.backgroundColor = 'green');
+
+            // IR1 detected → Seat 1 glows
+            if (data.ir1 == "Detected") {
+                console.log("IR1 detected! Glowing Seat 1");
+                seats[0].style.backgroundColor = 'red';
+            }
+
+            // IR2 detected → Seat 2 glows
+            if (data.ir2 == "Detected") {
+                console.log("IR2 detected! Glowing Seat 2");
+                seats[1].style.backgroundColor = 'red';
+            }
+        } catch (error) {
+            console.error('Error updating seat colors:', error);
+        }
+    }
+
+  
+
+
+
+   
+
+
+        // Periodically update stop glow and seat colors
+        setInterval(updateStopGlow, 1000); // Update every 1 second
+        setInterval(updateSeatColors, 1000); // Update every 1 second
+    </script>
+</body>
+</html>
+
