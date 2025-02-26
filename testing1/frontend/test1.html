@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus TRACKING</title>
    <link rel="stylesheet" href="test1.css">
+   
 </head>
 <body>
     <h1 class="heading">BUS TRACKING</h1>
@@ -58,21 +59,126 @@
                             <p class="p"> 9.45 AM </p>
                             </div>
     
-                            <div class="se">
-                                <p class="head">AVAILABLE SEAT </p>
-                                <p class="p">65 </p>
-                                </div>
+                          
                     </div>
             </div>
     
         </div>
     </div>
 
-    <h3>Seat Availability</h3>
-  
-   
+    <h2 style="text-align: center;">Bus Seat Availability</h2>
+
+    <!-- Main Container -->
+    <div class="mc" style="display: flex; justify-content: center; align-items: flex-start; gap: 30px; margin-top: 20px;">
+        
+        <!-- Seat Layout Container -->
+        <div class="seat-layout-container" id="seat-layout">
+            <h3 style="text-align: center;">AVAILABLE SEATS: <span id="available-seats">45</span></h3>
+            <!-- Seats will be generated here by JavaScript -->
+        </div>
+    
+        <!-- Legend beside seats -->
+        <div style="display: flex; flex-direction: column; gap: 10px; border: 1px solid gray; padding: 10px; border-radius: 5px; background: #f0f0f0;">
+            <h3 style="text-align: center;">Legend</h3>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 20px; height: 20px; background-color: green; border: 1px solid black;"></div>
+                <span>Available</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 20px; height: 20px; background-color: red; border: 1px solid black;"></div>
+                <span>Occupied</span>
+            </div>
+        </div>
+    
+    </div>
+    
 
     <script>
+const seatLayoutContainer = document.getElementById("seat-layout");
+
+function createSeatItem(number) {
+    const seat = document.createElement("div");
+    seat.classList.add("seat-item");
+    seat.innerText = number;
+    return seat;
+}
+
+// Generate 9 rows with 4 seats each (total 36 seats)
+function generateSeats() {
+    let seatNumber = 1;
+
+    for (let i = 0; i < 9; i++) {
+        const row = document.createElement("div");
+        row.classList.add("seat-row");
+
+        // Left side seats
+        row.appendChild(createSeatItem(seatNumber++));
+        row.appendChild(createSeatItem(seatNumber++));
+
+        // Space between left and right seats
+        const space = document.createElement("div");
+        space.classList.add("seat-space");
+        row.appendChild(space);
+
+        // Right side seats
+        row.appendChild(createSeatItem(seatNumber++));
+        row.appendChild(createSeatItem(seatNumber++));
+
+        seatLayoutContainer.appendChild(row);
+    }
+
+    // Last row with 5 seats, no space
+    const lastRow = document.createElement("div");
+    lastRow.classList.add("seat-last-row");
+
+    for (let i = 0; i < 5; i++) {
+        lastRow.appendChild(createSeatItem(seatNumber++));
+    }
+
+    seatLayoutContainer.appendChild(lastRow);
+
+    console.log("Seats generated!"); // Debugging line
+}
+
+// Generate seats when the page loads
+generateSeats();
+
+// Function to update seat availability
+function updateSeats() {
+    const allSeats = document.querySelectorAll(".seat-item");
+    let availableSeats = 0;
+
+    // Reset all seats to green (not occupied)
+    allSeats.forEach(seat => {
+        seat.classList.remove("booked");
+        seat.style.backgroundColor = "green"; // Ensure seats are green by default
+    });
+
+    // Randomly mark seats as occupied (red)
+    allSeats.forEach(seat => {
+        if (Math.random() < 0.5) { // 50% chance to mark a seat as occupied
+            seat.classList.add("booked");
+            seat.style.backgroundColor = "red";
+        } else {
+            availableSeats++; // Count available seats
+        }
+    });
+
+    // Display the number of available seats
+    document.getElementById("available-seats").textContent = availableSeats;
+
+    console.log(`Available seats: ${availableSeats}`); // Debugging line
+}
+
+// Event listener for bus items in the results div
+document.getElementById("results").addEventListener("click", function(event) {
+    if (event.target.closest(".bus-item")) {
+        console.log("Bus item clicked!"); // Debugging line
+
+        // Update the seat layout with random availability
+        updateSeats();
+    }
+});
         function toggleTimeInput() {
             const timeOption = document.getElementById("timeOption").value;
             const setTimeInput = document.getElementById("setTime");
@@ -150,6 +256,8 @@
             resultsDiv.style.display = "none";
         });
 }
+
+
 function search() {
     const from = document.getElementById("from").value.trim();
     const to = document.getElementById("to").value.trim();
@@ -520,10 +628,7 @@ function createOuterDivs(routeData, selectedTime, isReverseDirection, fromStopNa
                                 <p class="head">TIME</p>
                                 <p class="p">${formattedTime}</p> <!-- Display the calculated time here -->
                             </div>
-                            <div class="se">
-                                <p class="head">AVAILABLE SEAT</p>
-                                <p class="p">${stop.availableSeats || "N/A"}</p>
-                            </div>
+                           
                         </div>
                     </div>
                     <div class="veryout">

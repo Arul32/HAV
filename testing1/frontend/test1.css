@@ -163,7 +163,11 @@ button:hover {
     overflow-x: auto; 
     flex-wrap: nowrap;
     gap: 20px; 
-}       
+}     
+
+.stop::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}  
 .top{
  
     display: block;
@@ -228,8 +232,9 @@ button:hover {
     padding: 5px;
 }
 .smain{
-    display: flex;
-    justify-content: space-between;
+            
+            
+    place-items: center;
     width: 270px;
     margin-bottom: 20px;
 }
@@ -280,4 +285,53 @@ button:hover {
     border-radius: 20px;
     
 }
+/* Seat Layout Styles */
+.seat-layout-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    
+    padding: 10px;
+    border-radius: 20px;
+    min-width: 200px;
+}
 
+.seat-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.seat-item {
+    width: 40px;
+    height: 40px;
+    background-color: green;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 40px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.seat-item.booked {
+    background-color: red;
+}
+
+.seat-space {
+    width: 20px;
+}
+
+.seat-last-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.mc{
+    width: 85%;
+    border: 2px solid black;
+    margin-left: 100px;
+    border-radius: 20px;
+}
