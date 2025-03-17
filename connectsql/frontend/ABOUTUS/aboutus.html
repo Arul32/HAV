@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="../NAVBARCSS/nav.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin:0%;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e54b4b; /* Red color similar to Redbus */
+    color: rgb(255, 255, 255);
+    padding: 10px 20px;
+    height: 80px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 35px;
+}
+
+
+
+h1 {
+    font-size: 40px;
+
+}
+
+
+.containe {
+    display: block;
+    cursor: pointer;
+  }
+  
+.bar1,.bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background-color: #000000;
+    margin: 6px 0;
+    transition: 0.4s;
+  }
+  
+  .dropdown-content {
+    display:none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  .change .dropdown-content a:hover {background-color: #ddd;}
+  
+  .change .dropdown-content {display: block;}
+  
+  .change .bar1 {
+    transform: translate(0, 11px) rotate(-45deg);
+  }
+  
+  .change .bar2 {opacity: 0;}
+  
+  .change .bar3 {
+    transform: translate(0, -11px) rotate(45deg);
+  }
+
+  button{
+    background-color: #e54b4b;
+    border:none;
+  }
+
+.account img {
+    margin-right: 20px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+img:hover {
+  height: 43px;
+    width: 43px;
+}
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+       
+        h2 {
+            color: #34495e;
+            font-size: 24px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+        p {
+            text-align: justify;
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        ul {
+            text-align: left;
+            padding-left: 30px;
+            color: #666;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .contact-info {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .contact-info p {
+            font-weight: bold;
+            color: #333;
+        }
+        
+    </style>
+</head>
+<body>
+    <header class="header">
+      
+        <div class="containe" onclick="myFunction(this)">
+          <div class="bar1"></div>
+          <div class="bar2"></div>
+          <div class="bar3"></div>
+            <div class="dropdown-content">
+            <a href="../HOME/test1.html">HOME</a>
+            <a href="../LOGIN/login.html">LOGIN</a>
+            <a href="aboutus.html">ABOUT US</a>
+            <a href="#">LANGUAGE</a>
+        
+          </div>
+        </div>
+        
+                <div></div>
+           
+                <h1>BUS TRACKING</h1>
+                <div></div>
+                <div class="account">
+                <a href="\frontend\signup\signup.html"> <img src="https://icons.veryicon.com/png/o/miscellaneous/administration/account-25.png" alt="Image" ></a>
+                </div>
+            </header>
+    <div class="container">
+        <h1>About Us</h1>
+        <p>Welcome to our Application. We are dedicated to providing the best services to our customers, ensuring quality and satisfaction. Our team is committed to excellence in every aspect of our work.</p>
+        
+        <h2>Terms and Conditions</h2>
+        <p>By using our services, you agree to the following terms and conditions:</p>
+        <ul>
+            <li>We reserve the right to modify our terms at any time.</li>
+            <li>Users are responsible for maintaining the confidentiality of their account details.</li>
+        </ul>
+        
+        
+        <h2>Contact Us</h2>
+        <div class="contact-info">
+            <p>Email: support@havthree.com</p>
+            <p>Address: 123 Business Street, Coimbatore, Tamilnadu</p>
+        </div>
+    </div>
+</body>
+
+<script>
+       function toggleMenu() {
+            var menu = document.getElementById("menu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+    
+        function myFunction(x) {
+            x.classList.toggle("change");
+        }
+
+</script>
+</html>

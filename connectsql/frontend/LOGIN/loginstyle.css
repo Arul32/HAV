@@ -1,0 +1,147 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex; /* Use flexbox to center content */
+  flex-direction: column; /* Stack the header and login container vertically */
+  justify-content: flex-start; /* Align items to the start of the page */
+  align-items: center; /* Center horizontally */
+  height: 100vh; /* Full viewport height */
+  margin: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e54b4b; /* Red color similar to Redbus */
+  color: rgb(255, 255, 255);
+  padding: 10px 20px;
+  height: 80px;
+  width: 100%; /* Ensure header spans the full width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed; /* Fix the header to the top */
+  top: 0; /* Ensure the header stays at the top */
+  left: 0; /* Ensure the header spans the full width */
+  z-index: 1; /* Keep header above the other content */
+}
+
+h1 {
+  font-size: 40px;
+}
+
+.containe {
+  display: block;
+  cursor: pointer;
+}
+
+.bar1,.bar2, .bar3 {
+  width: 35px;
+  height: 5px;
+  background-color: #000000;
+  margin: 6px 0;
+  transition: 0.4s;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.change .dropdown-content a:hover { background-color: #ddd; }
+
+.change .dropdown-content {
+  display: block;
+}
+
+.change .bar1 {
+  transform: translate(0, 11px) rotate(-45deg);
+}
+
+.change .bar2 {
+  opacity: 0;
+}
+
+.change .bar3 {
+  transform: translate(0, -11px) rotate(45deg);
+}
+
+button {
+  background-color: #e54b4b;
+  border: none;
+}
+
+.account img {
+  margin-right: 60px;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+img:hover {
+  height: 43px;
+  width: 43px;
+}
+
+.login-container {
+  display: inline-block;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+  margin-top: 220px; /* Added margin-top to push the login form below the header */
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background-color: #218838;
+}
+
+#message {
+  margin-top: 15px;
+  color: red;
+}

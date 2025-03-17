@@ -1,0 +1,196 @@
+-- Create the database
+CREATE DATABASE bus_system;
+USE bus_system;
+
+-- Create the 'stops' table
+CREATE TABLE stops (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    stopName VARCHAR(255) NOT NULL
+);
+
+-- Create the 'buses' table
+CREATE TABLE buses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    busNo VARCHAR(10) NOT NULL,
+    total_stops INT NOT NULL,
+    trips JSON NOT NULL
+);
+
+-- Create the 'routes' table
+CREATE TABLE routes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    busNo VARCHAR(10) NOT NULL,
+    stopName VARCHAR(255) NOT NULL,
+    village VARCHAR(255),
+    forword INT,
+    reverse INT,
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    FOREIGN KEY (busNo) REFERENCES buses(busNo)
+);
+
+
+
+
+
+
+
+INSERT INTO stops (stopName) VALUES
+("Kinathukadavu"),
+("Kinathukadavu Old Bus Stand"),
+("Kinathukadavu Check Post"),
+("Arasampalayam Pirivu"),
+("Solavampalayam"),
+("Arasampalayam Railway Gate"),
+("Arasam Palyam"),
+("Shri Krishna Sweets Arasam Palyam"),
+("Karachery 1"),
+("Karachery"),
+("Vadachithur Pirivu"),
+("Panappatti High School"),
+("Panappatti"),
+("Madathukulam"),
+("Krishnapuram"),
+("Narasingapuram"),
+("Chettiyar Mill"),
+("Myvadi Pirivu"),
+("Palappampatti"),
+("Kalliyangadu"),
+("Rajavur Pirivu"),
+("Samathuvapuram"),
+("Periyakottai Pirivu"),
+("Vaikal Paalam"),
+("SV Mill Udumalpet"),
+("Shri GVG Visalakshi College"),
+("Gandhi Nagar Udumalaipettai"),
+("Udumalpet"),
+("Union Office Kinathukadavu"),
+("Kalankatuputhur"),
+("Gothavadi Pirivu"),
+("Kids Park School Kinathukadavu"),
+("Senram Palayam Privu"),
+("Thamaraikulam"),
+("Lakshmi Mills Thamaraikulam"),
+("LG Mullupadi"),
+("Mullur Patti Gate"),
+("Ellan Mill"),
+("Mettupalayam Pirivu"),
+("Kovilpalayam"),
+("Cheran Nagar"),
+("Santhegoundam palayam"),
+("Vaikkal Medu"),
+("Nanjegoundanputhur"),
+("Kullakka Palayam"),
+("Achipatti"),
+("Cheranthozili Colony"),
+("Sakthi Mill Jeeva Nagar"),
+("Jeeva Nagar"),
+("Vadakipalayam Pirivu"),
+("Thillai Nagar"),
+("Pollachi CTC Medu"),
+("Magalingapuram Aarch"),
+("Pollachi");
+
+
+-- Insert bus 42A
+INSERT INTO buses (busNo, total_stops, trips) VALUES
+("42A", 30, '["06:30", "08:30", "10:30", "12:30", "14:30", "16:30", "18:30", "20:30"]');
+
+-- Insert bus 33A
+INSERT INTO buses (busNo, total_stops, trips) VALUES
+("33A", 13, '["07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00"]');
+
+-- Insert bus 29
+INSERT INTO buses (busNo, total_stops, trips) VALUES
+("29", 15, '["07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00"]');
+
+
+
+-- Insert routes for bus 42A
+INSERT INTO routes (busNo, stopName, village, forword, reverse, latitude, longitude) VALUES
+("42A", "Arasam Palyam", "Arasam Palyam", 0, 90, 10.5624, 77.2252),
+("42A", "Kinathukadavu Check Post", "Kinathukadavu", 3, 87, 10.5604, 77.2232),
+("42A", "Kinathukadavu Old Bus Stand", "Kinathukadavu", 6, 84, 10.5601, 77.2228),
+("42A", "Kinathukadavu", "Kinathukadavu", 10, 80, 10.5599, 77.2226),
+("42A", "Union Office Kinathukadavu", "Kinathukadavu", 13, 77, 10.5607, 77.2235),
+("42A", "Kalankatuputhur", "Kalankatuputhur", 17, 73, 10.5611, 77.2239),
+("42A", "Gothavadi Pirivu", "Gothavadi", 21, 69, 10.5615, 77.2243),
+("42A", "Kids Park School Kinathukadavu", "Kids Park", 24, 66, 10.5618, 77.2246),
+("42A", "Senram Palayam Privu", "Senram Palayam", 28, 62, 10.5622, 77.2250),
+("42A", "Thamaraikulam", "Thamaraikulam", 32, 58, 10.5626, 77.2254),
+("42A", "Lakshmi Mills Thamaraikulam", "Lakshmi Mills", 35, 55, 10.5629, 77.2257),
+("42A", "LG Mullupadi", "LG Mullupadi", 38, 52, 10.5632, 77.2260),
+("42A", "Mullur Patti Gate", "Mullur Patti", 41, 49, 10.5635, 77.2263),
+("42A", "Ellan Mill", "Ellan Mill", 44, 46, 10.5638, 77.2266),
+("42A", "Mettupalayam Pirivu", "Mettupalayam", 47, 43, 10.5641, 77.2269),
+("42A", "Kovilpalayam", "Kovilpalayam", 50, 40, 10.5644, 77.2272),
+("42A", "Cheran Nagar", "Cheran Nagar", 53, 37, 10.5647, 77.2275),
+("42A", "Santhegoundam palayam", "Santhegoundampalayam", 56, 34, 10.5650, 77.2278),
+("42A", "Vaikkal Medu", "Vaikkal Medu", 59, 31, 10.5653, 77.2281),
+("42A", "Nanjegoundanputhur", "Nanjegoundanputhur", 62, 28, 10.5656, 77.2284),
+("42A", "Kullakka Palayam", "Kullakka Palayam", 65, 25, 10.5659, 77.2287),
+("42A", "Achipatti", "Achipatti", 68, 22, 10.5662, 77.2290),
+("42A", "Cheranthozili Colony", "Cheranthozili Colony", 71, 19, 10.5665, 77.2293),
+("42A", "Sakthi Mill Jeeva Nagar", "Sakthi Mill", 74, 16, 10.5668, 77.2296),
+("42A", "Jeeva Nagar", "Jeeva Nagar", 77, 13, 10.5671, 77.2299),
+("42A", "Vadakipalayam Pirivu", "Vadakipalayam", 80, 10, 10.5674, 77.2302),
+("42A", "Cheran Nagar", "Cheran Nagar", 83, 7, 10.5677, 77.2305),
+("42A", "Thillai Nagar", "Thillai Nagar", 86, 4, 10.5680, 77.2308),
+("42A", "Pollachi CTC Medu", "Pollachi", 88, 2, 10.5682, 77.2310),
+("42A", "Magalingapuram Aarch", "Pollachi", 89, 1, 10.5683, 77.2311),
+("42A", "Pollachi", "Pollachi", 90, 0, 10.5684, 77.2312);
+
+-- Insert routes for bus 33A
+INSERT INTO routes (busNo, stopName, village, forword, reverse, latitude, longitude) VALUES
+("33A", "Kinathukadavu", "Kinathukadavu", 0, 70, 10.81783920419869, 77.01770139818255),
+("33A", "Kinathukadavu Old Bus Stand", "Kinathukadavu", 3, 67, 10.823354825006069, 77.0190943622637),
+("33A", "Kinathukadavu Check Post", "Kinathukadavu", 7, 63, 10.829132031577645, 77.01793126671916),
+("33A", "Arasampalayam Pirivu", "Arasampalayam", 12, 58, 10.834497016674526, 77.01713116923285),
+("33A", "Solavampalayam", "Solavampalayam", 18, 52, 10.836609157520012, 77.02530136668496),
+("33A", "Arasampalayam Railway Gate", "Arasampalayam", 23, 47, 10.83989897611212, 77.03312681283126),
+("33A", "Arasam Palyam", "Arasam Palyam", 28, 42, 10.845380984801814, 77.04231466859207),
+("33A", "Shri Krishna Sweets Arasam Palyam", "Shri Krishna Sweets", 33, 37, 10.853530951720483, 77.05425682986888),
+("33A", "Karachery 1", "Karachery", 38, 32, 10.870034958297211, 77.06173132732366),
+("33A", "Karachery", "Karachery", 42, 28, 10.871014835708438, 77.0627049691945),
+("33A", "Vadachithur Pirivu", "Vadachithur", 50, 20, 10.83618892145219, 77.08358968634342),
+("33A", "Panappatti High School", "Panappatti", 60, 10, 10.875324527831504, 77.09836441084254),
+("33A", "Panappatti", "Panappatti", 70, 0, 10.87595791258442, 77.10024960079876);
+
+-- Insert routes for bus 29
+INSERT INTO routes (busNo, stopName, village, forword, reverse, latitude, longitude) VALUES
+("29", "Madathukulam", "Madathukulam", 0, 83, 10.56071, 77.36030),
+("29", "Krishnapuram", "Krishnapuram", 4, 79, 10.566964443467393, 77.34193606089302),
+("29", "Narasingapuram", "Narasingapuram", 13, 70, 10.568871790757512, 77.33616594197356),
+("29", "Chettiyar Mill", "Chettiyar Mill", 20, 63, 10.571125202596575, 77.33146334872872),
+("29", "Myvadi Pirivu", "Myvadi Pirivu", 30, 53, 10.578758152933133, 77.31566971213174),
+("29", "Palappampatti", "Palappampatti", 35, 48, 10.579730003768834, 77.30047250890894),
+("29", "Kalliyangadu", "Kalliyangadu", 38, 45, 10.577967192582364, 77.29181953549798),
+("29", "Rajavur Pirivu", "Rajavur Pirivu", 42, 41, 10.577550605146147, 77.28367366670328),
+("29", "Samathuvapuram", "Samathuvapuram", 44, 39, 10.577497872515757, 77.2761259304489),
+("29", "Periyakottai Pirivu", "Periyakottai Pirivu", 50, 33, 10.57819, 77.27711),
+("29", "Vaikal Paalam", "Vaikal Paalam", 56, 27, 10.57814, 77.27224),
+("29", "SV Mill Udumalpet", "SV Mill Udumalpet", 64, 19, 10.57862, 77.26880),
+("29", "Shri GVG Visalakshi College", "Shri GVG Visalakshi College", 74, 9, 10.57818, 77.26627),
+("29", "Gandhi Nagar Udumalaipettai", "Gandhi Nagar Udumalaipettai", 80, 3, 10.58280, 77.25923),
+("29", "Udumalpet", "Udumalpet", 83, 0, 10.58564, 77.25142);
+
+
+
+
+ALTER TABLE buses ADD UNIQUE (busNo);
+
+
+ALTER TABLE buses ADD COLUMN totaltime INT;
+UPDATE buses SET totaltime = 90 WHERE busNo = '42A';
+UPDATE buses SET totaltime = 70 WHERE busNo = '33A';
+UPDATE buses SET totaltime = 83 WHERE busNo = '29';
+
+
+
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);

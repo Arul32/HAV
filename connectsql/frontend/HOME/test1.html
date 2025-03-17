@@ -1,0 +1,98 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus TRACKING</title>
+   <link rel="stylesheet" href="test1.css">
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
+   <link rel="stylesheet" href="../leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css">
+    <link rel="stylesheet" href="../NAVBARCSS/nav.css">
+
+   
+
+   <style>
+
+   </style>
+</head>
+<body>
+    <header class="header">
+        <div class="containe" onclick="myFunction(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="dropdown-content">
+                <a href="test1.html">HOME</a>
+                <a href="../LOGIN/login.html">LOGIN</a>
+                <a href="../ABOUTUS/aboutus.html">ABOUT US</a>
+                <a href="#">LANGUAGE</a>
+            </div>
+        </div>
+        <h1>BUS TRACKING</h1>
+        <div class="account">
+            <a href="\frontend\signup\signup.html">
+                <img src="https://icons.veryicon.com/png/o/miscellaneous/administration/account-25.png" alt="Account">
+            </a>
+        </div>
+    </header>
+      
+      
+      
+    <div class="search-container">
+        <div style="position: relative;">
+            <input type="text" id="from" placeholder="From" oninput="fetchSuggestions('from')" autocomplete="off">
+        </div>
+    
+        <div style="position: relative;">
+            <input type="text" id="to" placeholder="To" oninput="fetchSuggestions('to')" autocomplete="off">
+        </div>
+    
+        <input type="text" id="bus" placeholder="Bus No (Optional)">
+        <select id="timeOption" onchange="toggleTimeInput()">
+            <option value="current">Current Time</option>
+            <option value="set">Set Time</option>
+            <option value="notset" selected>Not Set</option>
+        </select>
+        <input type="time" id="setTime" disabled>
+        <button onclick="search()">Search</button>
+    </div>
+    
+    <!-- Results Container -->
+    <div id="results" class="results">
+        <!-- Suggestions will be displayed here -->
+    </div>
+    
+    
+    
+
+    
+
+    
+   <script src="search.js"></script>
+   <script src="timingfunction.js"></script>
+   <script src="suggestion&time.js"></script>
+   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <script src="../leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.js"></script>
+   <script>
+      function myFunction(x) {
+            localStorage.removeItem('username');
+            x.classList.
+            toggle("change");
+        }
+
+    
+        // Check if a user is logged in
+        const loggedInUser = sessionStorage.getItem("loggedInUser");
+         BUSID = sessionStorage.getItem("BUSID");
+
+        if (loggedInUser) {
+            console.log("Currently logged in user:", loggedInUser);
+        } else {
+            console.log("You need to log in or sign up.");
+        }
+   </script>
+   
+</body>
+</html>

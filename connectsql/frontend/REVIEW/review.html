@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Review & Rating</title>
+    <link rel="stylesheet" href="reviewstyle.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Bus Review & Rating</h2>
+        
+        <!-- Review and Rating Section -->
+        <div id="reviewSection">
+            <textarea id="review" rows="4" placeholder="Write your review here..."></textarea>
+            <div class="stars">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+            <button onclick="submitReview()">Submit Review</button>
+        </div>
+
+        <!-- Hidden inputs for bus ID and username -->
+        <input type="hidden" id="busId" value="">
+        <input type="hidden" id="username" value="">
+
+        <!-- Reviews Container -->
+        <div class="reviews-container" id="reviewsContainer">
+            <h3>Recent Reviews</h3>
+            <div id="reviewsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve the bus ID and username from sessionStorage
+        const busId = sessionStorage.getItem("BUSID");
+        const username = sessionStorage.getItem("loggedInUser");
+
+        console.log("Bus ID clicked:", busId);
+        console.log("Logged in user:", username);
+
+        // Set the bus ID and username in the hidden inputs
+        document.getElementById("busId").value = busId || "";
+        document.getElementById("username").value = username || "";
+
+        // Hide the review section if the user is not logged in
+        const reviewSection = document.getElementById("reviewSection");
+        if (!username) {
+            reviewSection.style.display = "none"; // Hide the review section
+        }
+
+        // Star rating functionality
+        let selectedRating = 0;
+        document.querySelectorAll('.stars span').forEach(star => {
+            star.addEventListener('click', function() {
+                if (!username) {
+                    alert("You must be logged in to submit a review.");
+                    return;
+                }
+                selectedRating = parseInt(this.getAttribute('data-value'));
+                document.querySelectorAll('.stars span').forEach((s, index) => {
+                    s.classList.toggle('active', index < selectedRating);
+                });
+            });
+        });
+
+        // Function to fetch reviews for a specific bus ID
+        function fetchReviews(busId) {
+            fetch(`http://localhost:8080/api/reviews?busId=${busId}`)
+                .then(response => response.json())
+                .then(reviews => {
+                    const reviewsList = document.getElementById("reviewsList");
+                    reviewsList.innerHTML = "";
+
+                    if (reviews.length === 0) {
+                        reviewsList.innerHTML = "<p>No reviews yet. Be the first to review!</p>";
+                        return;
+                    }
+
+                    // Display the reviews
+                    reviews.forEach(review => {
+                        const reviewItem = document.createElement("div");
+                        reviewItem.classList.add("review-item");
+                        reviewItem.innerHTML = `
+                            <p><strong>By ${review.username}</strong> on ${new Date(review.created_at).toLocaleDateString()}</p>
+                            <p>${"★".repeat(review.rating)}</p>
+                            <p>${review.review_text}</p>
+                        `;
+                        reviewsList.appendChild(reviewItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                });
+        }
+
+        // Function to submit a review
+        function submitReview() {
+            const busId = document.getElementById("busId").value;
+            const reviewText = document.getElementById("review").value.trim();
+
+            if (!username) {
+                alert("You must be logged in to submit a review.");
+                return;
+            }
+
+            if (!reviewText || selectedRating === 0) {
+                alert("Please write a review and select a rating.");
+                return;
+            }
+
+            // Create the review object
+            const review = {
+                bus_id: busId,
+                username: username,
+                rating: selectedRating,
+                review_text: reviewText
+            };
+
+            // Send the review to the backend
+            fetch("http://localhost:8080/api/reviews", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(review)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Review submitted successfully:", data);
+                    // Clear the form
+                    document.getElementById("review").value = "";
+                    selectedRating = 0;
+                    document.querySelectorAll('.stars span').forEach(star => star.classList.remove('active'));
+
+                    // Refresh the reviews list
+                    fetchReviews(busId);
+                })
+                .catch(error => {
+                    console.error("Error submitting review:", error);
+                });
+        }
+
+        // Fetch reviews when the page loads
+        if (busId) {
+            fetchReviews(busId);
+        }
+    </script>
+</body>
+</html>

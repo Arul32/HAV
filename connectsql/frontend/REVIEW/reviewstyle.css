@@ -1,0 +1,112 @@
+body {
+    display: block;
+    justify-items: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    flex-direction: column;
+}
+h2{
+    font-size: x-larger;
+}
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    flex-grow: 1;
+    justify-content: center;
+}
+.bus-number {
+    padding: 10px;
+    width: 90%;
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+textarea, button {
+    margin: 10px 0;
+    padding: 15px;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    width: calc(100% - 22px);
+    box-sizing:border-box;
+}
+#review{
+    width: 500;
+    height: 200px;
+    font-size:x-large;
+}
+.stars {
+    padding: 5%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+.stars span {
+    font-size: 60px;
+    cursor: pointer;
+    color: #ccc;
+}
+.stars span.active {
+    color: gold;
+}
+button {
+    width: 200px;
+    font-size: large;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border: none;
+    border-radius: 50px;
+}
+button:hover {
+    background-color: #0056b3;
+}
+
+.reviews-container {
+    width: 100%;
+    margin-top: 20px;
+    text-align: left;
+}
+.review-item {
+    background: #f8f9fa;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.review-rating {
+    color: gold;
+    font-size: 24px;
+}
+
+
+.edit-button{
+    float: inline-end;
+    padding: 5px;
+    width:120px;
+    background-color: rgb(184, 54, 54);
+}
+
+
+.edit-button:hover{
+    float: inline-end;
+    padding: 6px;
+    width:120px;
+    background-color: rgb(231, 26, 26);
+}
+

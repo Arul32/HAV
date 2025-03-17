@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="../NAVBARCSS/nav.css">
+    <link rel="stylesheet" href="../LOGIN/loginstyle.css">
+</head>
+<body>
+    <header class="header">
+        <div class="containe" onclick="myFunction(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="dropdown-content">
+                <a href="../HOME/test1.html">HOME</a>
+                <a href="../LOGIN/login.html">LOGIN</a>
+                <a href="../ABOUTUS/aboutus.html">ABOUT US</a>
+                <a href="#">LANGUAGE</a>
+            </div>
+        </div>
+        <h1>BUS TRACKING</h1>
+        <div class="account">
+            <a href="\frontend\signup\signup.html"> <img src="https://icons.veryicon.com/png/o/miscellaneous/administration/account-25.png" alt="Image" ></a>
+        </div>
+    </header>
+    <div class="login-container">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="username" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="new-password" required>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p id="message"></p>
+        <p>Already have an account? <a href="../LOGIN/login.html">Login here</a></p>
+    </div>
+    <script>
+        function myFunction(x) {
+            localStorage.removeItem('username');
+            x.classList.toggle("change");
+        }
+
+        // Handle signup form submission
+        document.getElementById("signupForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("http://localhost:8080/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("message").textContent = data.message;
+            document.getElementById("message").style.color = "green";
+
+            // Store the username in sessionStorage
+            sessionStorage.setItem("loggedInUser", data.username);
+
+            // Redirect to the home page after successful signup
+            window.location.href = "../HOME/test1.html";
+        } else {
+            document.getElementById("message").textContent = data.error;
+            document.getElementById("message").style.color = "red";
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("message").textContent = "An error occurred. Please try again.";
+        document.getElementById("message").style.color = "red";
+    }
+});
+    </script>
+</body>
+</html>

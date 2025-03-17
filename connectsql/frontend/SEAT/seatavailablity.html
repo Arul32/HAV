@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bus Seat Availability</title>
+  <link rel="stylesheet" href="../NAVBARCSS/nav.css">
+  <link rel="stylesheet" href="styleseats.css">
+</head>
+<body>
+  <header class="header">
+    <div class="containe" onclick="myFunction(this)">
+      <div class="bar1"></div>
+      <div class="bar2"></div>
+      <div class="bar3"></div>
+      <div class="dropdown-content">
+        <a href="../HOME/test1.html">HOME</a>
+        <a href="../LOGIN/login.html">LOGIN</a>
+        <a href="../ABOUTUS/aboutus.html">ABOUT US</a>
+        <a href="#">LANGUAGE</a>
+      </div>
+    </div>
+    <h1>BUS TRACKING</h1>
+    <div class="account">
+      <a href="\frontend\signup\signup.html"> <img src="https://icons.veryicon.com/png/o/miscellaneous/administration/account-25.png" alt="Image" ></a>
+    </div>
+  </header>
+  <h1>Bus Seat Availability</h1>
+  <div class="bus-layout">
+    <div class="seats" id="seats-container"></div>
+  </div>
+
+  <script>
+    function myFunction(x) {
+      localStorage.removeItem('username');
+      x.classList.toggle("change");
+    }
+
+    // Function to generate seats and gaps
+    function generateSeats() {
+  const seatsContainer = document.getElementById("seats-container");
+
+  // Clear existing seats
+  seatsContainer.innerHTML = "";
+
+  // Define the seat layout
+  const layout = [
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "g", "s", "s",
+    "s", "s", "s", "s", "s"
+  ];
+
+  let seatNumber = 1;
+
+  layout.forEach((item, index) => {
+    if (item === "s") {
+      const seat = document.createElement("div");
+      seat.classList.add("seat");
+      seat.textContent = ` ${seatNumber}`;
+
+      // Randomly mark seats as available or occupied
+      if (Math.random() < 0.5) {
+        seat.style.backgroundColor = "#4CAF50"; // Available (green)
+      } else {
+        seat.style.backgroundColor = "#f44336"; // Occupied (red)
+        seat.classList.add("booked");
+      }
+
+      seatsContainer.appendChild(seat);
+      seatNumber++;
+    } else if (item === "g") {
+      const gap = document.createElement("div");
+      gap.classList.add("gap");
+      seatsContainer.appendChild(gap);
+    }
+  });
+}
+    // Generate seats when the page loads
+    generateSeats();
+  </script>
+</body>
+</html>

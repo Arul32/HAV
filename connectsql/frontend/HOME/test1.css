@@ -1,0 +1,167 @@
+body {
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin:auto;
+    text-align: center;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+  
+  
+.heading
+{
+       margin-top: 5%;
+}
+
+
+/* Style the timings dropdown */
+.timings select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc; /* Match border color */
+    border-radius: 10px;
+    width: 150px; /* Fixed width for dropdown */
+    appearance: none; /* Remove default arrow */
+    background-color: white; /* Match background */
+    color: #333; /* Match text color */
+    cursor: pointer; /* Show pointer cursor */
+}
+
+/* Style the dropdown when disabled (only one timing) */
+.timings select:disabled {
+    background-color: white; /* Keep background white */
+    color: #333; /* Keep text color consistent */
+    cursor: default; /* Show default cursor */
+    border: 1px solid #ccc; /* Match border color */
+    opacity: 1; /* Ensure no transparency */
+}
+
+
+/*search container*/
+.search-container {
+
+    background: white;
+    margin-top: 5%;
+    margin-left: 100px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 80%;
+    justify-content: space-between;
+    box-shadow: #ccc;
+
+}
+input, select, button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+button:hover {
+    background-color: #0056b3;
+}
+
+/* DROPDOWN RESUTLS AFTER SEARCHING*/
+.results {
+    margin-top: 20px;
+    width: 80%;
+    display: none;
+    padding: 15px;
+    border-radius:15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 100px;
+    background: white; /* Match the background color */
+    max-height: 200px; /* Limit height to show 4 items initially */
+    overflow-y: auto; /* Always show a scrollbar */
+}
+.suggestion-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px; /* Increase text size */
+    color: #333;
+    cursor: pointer;
+    text-align: left; /* Align text to the left */
+}
+
+.suggestion-item:hover {
+    border-radius: 10px;
+    background: #f0f0f0; /* Match the hover background color */
+}
+
+.suggestion-item:last-child {
+    border-bottom: none; /* Remove border for the last item */
+}
+
+.suggestion-item strong {
+    font-weight: bold;
+    color: #000;
+}
+
+.see-more {
+    padding: 10px;
+    text-align: center; /* Center the "See More" button */
+    cursor: pointer;
+    color: #007bff; /* Blue color for "See More" */
+    font-weight: bold;
+}
+
+.see-more:hover {
+    background: #f0f0f0; /* Hover effect for "See More" */
+}
+.see-more:hover {
+    background: #f0f0f0; /* Hover effect for "See More" */
+}
+.bus-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.bus-item:last-child {
+    border-bottom: none;
+}
+.bus-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.bus-info strong {
+    margin-right: 5px;
+}
+.timings {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.bus-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.bus-item:hover {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+}
+
+.bus-info div {
+    margin-bottom: 5px;
+}
+
