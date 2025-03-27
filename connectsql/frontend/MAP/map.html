@@ -5,67 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAP VIEW</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
-   <link rel="stylesheet" href="../leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css">
-
+    <link rel="stylesheet" href="../leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css">
     <style>
         #map {
             width: 100%;
-            height: 90vh;
+            height: 65vh;
+        }
+        .stops-wrapper {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .stop-header {
+            margin-top: 5px;
+            font-family: Arial, sans-serif;
+            height: 40px;
+            margin-bottom: 5px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            box-shadow: 0px 4px 4px -2px rgba(0, 0, 0, 0.3);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 50px;
+            margin-top: 10px;
+            margin-left: 25px;
+            position: relative;
+        }
+        .stop {
+            display: flex;
+            align-items: center;
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
+        .circle {
+            width: 8px;
+            height: 8px;
+            border: 2px solid;
+            border-color: black;
+            border-radius: 100px;
+            margin-right: 10px;
+        }
+        .circle.filled {
+            background-color: blue;
+        }
+        .line {
+            width: 2px;
+            height: 30px;
+            background-color: black;
+            margin-left: 4px;
+        }
+        .line.filled {
+            background-color: blue;
+        }
+        .stop-name {
+            margin-left: 20px;
+            font-size: 18px;
+            white-space: nowrap;
+            font-family: Arial, sans-serif;
+            font-size: medium;
+        }
+        .leaflet-marker-icon {
+            filter: none !important;
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <div class="stops-wrapper">
+        <div class="stop-header" id="stopHeader">STOP 1 To STOP 10</div>
+        <div class="container" id="stopsContainer">
+            <!-- Stops will be dynamically generated here -->
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.js"></script>
-    <script>
-       const clickedBusStops = JSON.parse(localStorage.getItem("clickedBusStops"));
-
-if (!clickedBusStops || clickedBusStops.length === 0) {
-    alert("No bus stops data found.");
-} else {
-    // Initialize the map
-    const map = L.map('map').setView([clickedBusStops[0].latitude, clickedBusStops[0].longitude], 13);
-
-    // Add OpenStreetMap tiles
-    const osm = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-    });
-    osm.addTo(map);
-
-    // Convert waypoints to LatLng objects
-    const waypoints = clickedBusStops.map(stop => L.latLng(stop.latitude, stop.longitude));
-
-    // Add routing control with markers and popups
-    L.Routing.control({
-        waypoints: waypoints,
-        lineOptions: {
-            addWaypoints: false,
-            draggable: false
-        },
-        createMarker: function (i, waypoint, n) {
-            // Get the stop data (name and number) from the waypoints array
-            const stopData = clickedBusStops[i];
-
-            // Create a marker
-            const marker = L.marker(waypoint.latLng, {
-                draggable: false
-            });
-
-            // Add a popup with stop number and stop name
-            marker.bindPopup(`
-                <b>Stop ${i + 1}</b><br>
-            <b>Name:</b> ${stopData.stopName}<br>
-           
-            `);
-
-            return marker;
-        },
-        show: false // Hide the direction box
-    }).addTo(map);
-}
-    </script>
+    <script src="map.js"></script>
 </body>
 </html>

@@ -195,6 +195,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 
+
 CREATE TABLE bus_reviews (
     bus_id INT,
     username VARCHAR(255),

@@ -5,6 +5,7 @@ function search() {
     const bus = document.getElementById("bus").value.trim();
     const timeOption = document.getElementById("timeOption").value;
     const setTime = document.getElementById("setTime").value;
+    
 
     if (!to) {
         alert("Please enter at least a 'To' location.");
@@ -313,24 +314,34 @@ function searchBus() {
                 });
 
                 const mapButton = busItem.querySelector(".map-view-button");
-                mapButton.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    fetch(`http://localhost:8080/api/bus-route?busNo=${bus.busNo}&isReverseDirection=${bus.isReverseDirection}`)
-                        .then(response => response.json())
-                        .then(routeData => {
-                            const clickedBusStops = [];
-                            routeData.route.forEach(stop => {
-                                clickedBusStops.push({
-                                    stopName: stop.stopName,
-                                    latitude: stop.latitude,
-                                    longitude: stop.longitude
-                                });
-                            });
-                            localStorage.setItem("clickedBusStops", JSON.stringify(clickedBusStops));
-                            window.location.href = "../MAP/map.html";
-                        })
-                        .catch(error => console.error("Error fetching route data:", error));
+mapButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    fetch(`http://localhost:8080/api/bus-route?busNo=${bus.busNo}&isReverseDirection=${bus.isReverseDirection}`)
+        .then(response => response.json())
+        .then(routeData => {
+            // Debug: Verify timing data exists
+            if (routeData.route.length > 0) {
+                console.log("First stop in API response:", {
+                    name: routeData.route[0].stopName,
+                    forword: routeData.route[0].forword,
+                    reverse: routeData.route[0].reverse
                 });
+            }
+
+            const clickedBusStops = {
+                totalStops: bus.totalStops,
+                stops: routeData.route, // Use the complete route data
+                isLive: bus.live,
+                liveTime: bus.liveTime,
+                busNo: bus.busNo,
+                isReverseDirection: bus.isReverseDirection
+            };
+            
+            localStorage.setItem("clickedBusStops", JSON.stringify(clickedBusStops));
+            window.location.href = "../MAP/map.html";
+        })
+        .catch(error => console.error("Error fetching route data:", error));
+});
 
                 const seatButton = busItem.querySelector(".seat-view-button");
                 seatButton.addEventListener("click", (event) => {
