@@ -162,10 +162,10 @@ app.get("/api/buses", (req, res) => {
             return res.status(500).json({ error: "Failed to fetch buses" });
         }
 
-        console.log("Raw Database Results:", results); // Log the raw results from the database
+    //    console.log("Raw Database Results:", results); // Log the raw results from the database
 
         const availableBuses = processBusResults(results, from, to);
-        console.log("Processed Buses:", availableBuses); // Log the processed buses
+      //  console.log("Processed Buses:", availableBuses); // Log the processed buses
 
         res.json(availableBuses);
     });
@@ -234,37 +234,45 @@ function processBusResults(results, from, to) {
                     return null;
                 })
                 .filter(time => time !== null);
+               // console.log(`Bus ${bus.busNo} Trips (Raw):`, bus.trips);
+               console.log("bus no:"+bus.busNo+" reversed:"+isReverseDirection);
+               const now = new Date();
+let isBusLive = false;
+
+// Use forEach to check each trip
+bus.trips.forEach((trip, index) => {
+    // Check if this trip should be considered based on direction
+    if ((isReverseDirection && index % 2 !== 0) || (!isReverseDirection && index % 2 === 0)) {
+        const [tripHours, tripMinutes] = trip.split(':').map(Number);
+        
+        // Calculate start and end times
+        const tripStart = new Date();
+        tripStart.setHours(tripHours, tripMinutes, 0, 0);
+        
+        const tripEnd = new Date(tripStart);
+        tripEnd.setMinutes(tripEnd.getMinutes() + bus.totaltime);
+        
+        // Check if current time is within this trip's window
+        if (now >= tripStart && now <= tripEnd) {
+            isBusLive = true;
+            console.log(`🚌 Bus ${bus.busNo} is LIVE (${isReverseDirection ? "REVERSE" : "FORWARD"})`);
+            console.log(`   Trip ${index + 1}: ${trip} - ${tripEnd.getHours()}:${tripEnd.getMinutes().toString().padStart(2, '0')}`);
+        }
+    }
+});
 
             // Calculate bus schedules and check if the bus is live
-            const busSchedules = bus.trips.map((trip) => {
-                // Parse the trip's starting time (e.g., "14:30")
-                const tripStartTime = new Date(`1970-01-01T${trip}:00`);
-
-                // Calculate the trip's ending time by adding totalTime (e.g., 90 minutes)
-                const tripEndTime = new Date(tripStartTime);
-                tripEndTime.setMinutes(tripEndTime.getMinutes() + bus.totaltime);
-
-                // Check if the current time is within the trip's start and end time
-                const isLive = currentTime >= tripStartTime && currentTime <= tripEndTime;
-
-                return {
-                    startTime: tripStartTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    endTime: tripEndTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    isLive: isLive // Add isLive flag
-                };
-            });
-
+           
             // Check if any trip is live
-            const isBusLive = busSchedules.some(schedule => schedule.isLive);
+        
 
             // Log whether the bus is live or not
-            console.log(`Bus ${bus.busNo} is ${isBusLive ? "live" : "not live"}.`);
-
+          
             // Use the totaltime from the buses table
             const totalTime = bus.totaltime;
 
             availableBuses.push({
-                id: bus.id, // Include the bus ID
+                id: bus.id,
                 busNo: bus.busNo,
                 from: bus.route[fromIndex].stopName,
                 to: bus.route[toIndex].stopName,
@@ -274,9 +282,31 @@ function processBusResults(results, from, to) {
                 toLongitude: bus.route[toIndex].longitude,
                 tripTimes: tripTimes,
                 totalStops: bus.total_stops,
-                totalTime: totalTime, // Use the totaltime from the buses table
-                live: isBusLive, // Add live status
-                isReverseDirection: isReverseDirection
+                totalTime: totalTime,
+                live: isBusLive,
+                isReverseDirection: isReverseDirection,
+                liveTime: isBusLive ? (() => {
+                    const liveTrip = bus.trips.find((trip, index) => {
+                        const [tripHours, tripMinutes] = trip.split(':').map(Number);
+                        const tripStart = new Date();
+                        tripStart.setHours(tripHours, tripMinutes, 0, 0);
+                        const tripEnd = new Date(tripStart);
+                        tripEnd.setMinutes(tripEnd.getMinutes() + bus.totaltime);
+                        return now >= tripStart && now <= tripEnd;
+                    });
+                    
+                    const [startHours, startMins] = liveTrip.split(':').map(Number);
+                    const startTime = new Date();
+                    startTime.setHours(startHours, startMins, 0, 0);
+                    
+                    const endTime = new Date(startTime);
+                    endTime.setMinutes(endTime.getMinutes() + bus.totaltime);
+                    
+                    return {
+                        start: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        end: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                })() : null
             });
         }
     });
@@ -284,6 +314,7 @@ function processBusResults(results, from, to) {
     return availableBuses;
 }
 // API to get bus route
+// Modified API to get bus route
 app.get("/api/bus-route", (req, res) => {
     const { busNo, isReverseDirection } = req.query;
 
@@ -291,7 +322,9 @@ app.get("/api/bus-route", (req, res) => {
         return res.status(400).json({ error: "Bus number is required" });
     }
 
-    const sql = `SELECT * FROM routes WHERE busNo = ? ORDER BY forword ${isReverseDirection === "true" ? "DESC" : "ASC"}`;
+    const sql = `SELECT stopName, village, latitude, longitude, forword, reverse 
+                 FROM routes WHERE busNo = ? 
+                 ORDER BY forword ${isReverseDirection === "true" ? "DESC" : "ASC"}`;
 
     db.query(sql, [busNo], (err, results) => {
         if (err) {
@@ -299,14 +332,29 @@ app.get("/api/bus-route", (req, res) => {
             return res.status(500).json({ error: "Failed to fetch bus route" });
         }
 
+        // Verify we got results with timing data
+        if (results.length > 0) {
+            console.log("First stop timing data:", {
+                stopName: results[0].stopName,
+                forword: results[0].forword,
+                reverse: results[0].reverse
+            });
+        }
+
         res.json({
             busNo: busNo,
-            route: results,
+            route: results.map(stop => ({
+                stopName: stop.stopName,
+                village: stop.village,
+                latitude: stop.latitude,
+                longitude: stop.longitude,
+                forword: stop.forword,  // Explicitly include
+                reverse: stop.reverse   // Explicitly include
+            })),
             isReverseDirection: isReverseDirection === "true"
         });
     });
 });
-
 // API to search buses based on 'to' location
 app.get("/api/to-location-buses", (req, res) => {
     const { to, busNo } = req.query;
